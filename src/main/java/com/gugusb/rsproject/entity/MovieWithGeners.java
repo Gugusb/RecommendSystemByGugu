@@ -2,13 +2,18 @@ package com.gugusb.rsproject.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
-@Table(name = "movie_geners")
-public class RSGenerForMovie {
+@Table(name = "movie_genersplus")
+public class MovieWithGeners {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
+
+    @Column(name = "genercount")
+    private Byte genercount;
 
     @Column(name = "Action")
     private Byte action;
@@ -70,6 +75,14 @@ public class RSGenerForMovie {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Byte getGenercount() {
+        return genercount;
+    }
+
+    public void setGenercount(Byte genercount) {
+        this.genercount = genercount;
     }
 
     public Byte getAction() {
