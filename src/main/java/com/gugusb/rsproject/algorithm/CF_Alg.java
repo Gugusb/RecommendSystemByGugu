@@ -1,18 +1,21 @@
 package com.gugusb.rsproject.algorithm;
 
-import com.gugusb.rsproject.entity.MovieWithGeners;
 import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
+import com.gugusb.rsproject.util.MovieWithRate;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CF_Alg implements BaseAlg{
 
     private RSUser user = null;
     private Map<Integer, List<Integer>> baseMovies;
     private Map<Integer, RSRating> baseRatings;
+    private List<Double> genreSimList;
+    private List<Double> avgRateList;
+
+
 
     /**
      * cf alg
@@ -25,6 +28,14 @@ public class CF_Alg implements BaseAlg{
         this.user = user_;
         this.baseMovies = movies;
         this.baseRatings = ratings;
+        this.avgRateList = new ArrayList<>();
+        this.genreSimList = new ArrayList<>();
+        genreSimList.add(0.0);
+        avgRateList.add(0.0);
+        for(int i = 1;i <= 19;i ++){
+            genreSimList.add(getGenreSim(i));
+            avgRateList.add(getGenreAvgRate(i));
+        }
     }
 
     /**
@@ -84,19 +95,28 @@ public class CF_Alg implements BaseAlg{
             if(movieGenre.get(i) == 0){
                 continue;
             }else{
-                fz += 1.0 * getGenreSim(i) * getGenreAvgRate(i);
-                fm += 1.0 * getGenreSim(i);
+                fz += 1.0 * genreSimList.get(i) * avgRateList.get(i);
+                fm += 1.0 * genreSimList.get(i);
             }
         }
 
-        if(fm == 0)
-            return -1;
+        if(Double.isNaN(fz / fm))
+            return 0.0;
         return fz / fm;
     }
 
     @Override
-    public List<RSMovie> getRecommandMovie() {
-        return null;
+    public List<MovieWithRate> getRecommandMovie(Map<Integer, List<Integer>> allMovies) {
+        List<MovieWithRate> list = new ArrayList<>();
+        for(int i : allMovies.keySet()){
+            //排除已经看过的电影
+            if(baseMovies.containsKey(i)){
+                continue;
+            }
+            list.add(new MovieWithRate(i, getMovieRateWithUser(allMovies.get(i))));
+        }
+        Collections.sort(list);
+        return list;
     }
 
     @Override

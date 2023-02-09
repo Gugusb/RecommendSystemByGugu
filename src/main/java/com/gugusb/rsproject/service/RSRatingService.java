@@ -1,17 +1,14 @@
 package com.gugusb.rsproject.service;
 
-import com.gugusb.rsproject.entity.MovieWithGeners;
 import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
-import com.gugusb.rsproject.repository.GenersRepository;
+import com.gugusb.rsproject.repository.RSGenresRepository;
 import com.gugusb.rsproject.repository.RSRatingRepository;
 import com.gugusb.rsproject.util.GenreTransformer;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +19,7 @@ public class RSRatingService {
     RSRatingRepository ratingRepository;
 
     @Autowired
-    GenersRepository genersRepository;
+    RSGenresRepository genresRepository;
 
     public List<RSRating> getRatingListByMovie(RSMovie movie){
         List<RSRating> ratingList = ratingRepository.findByMovieid(movie.getId());
@@ -56,7 +53,7 @@ public class RSRatingService {
         Map<Integer, List<Integer>> map = new HashMap<>();
         for(RSRating rating : this.getRatingListByUser(user)){
             int movieId = rating.getMovieid();
-            map.put(movieId, GenreTransformer.TransformGenres(genersRepository.findById(movieId).get()));
+            map.put(movieId, GenreTransformer.TransformGenres(genresRepository.findById(movieId).get()));
         }
         return map;
     }

@@ -2,11 +2,9 @@ package com.gugusb.rsproject.entity;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "movie_genersplus")
-public class MovieWithGeners {
+public class MovieWithGenres {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -42,7 +40,7 @@ public class MovieWithGeners {
     @Column(name = "Fantasy")
     private Byte fantasy;
 
-    @Column(name = "FilmNoir")
+    @Column(name = "Film_noir")
     private Byte filmNoir;
 
     @Column(name = "Horror")
@@ -57,7 +55,7 @@ public class MovieWithGeners {
     @Column(name = "Romance")
     private Byte romance;
 
-    @Column(name = "SciFi")
+    @Column(name = "Sci_fi")
     private Byte sciFi;
 
     @Column(name = "Thriller")

@@ -1,6 +1,6 @@
 package com.gugusb.rsproject.util;
 
-import com.gugusb.rsproject.entity.MovieWithGeners;
+import com.gugusb.rsproject.entity.MovieWithGenres;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class GenreTransformer {
 
-    public static List<Integer> TransformGenres(MovieWithGeners movie){
+    public static List<Integer> TransformGenres(MovieWithGenres movie){
         List<Integer> list = new ArrayList<>();
         list.add(movie.getGenercount().intValue());
         list.add(movie.getAction().intValue());
@@ -34,9 +34,9 @@ public class GenreTransformer {
         return list;
     }
 
-    public static Map<Integer, List<Integer>> CreateGenreMap(List<MovieWithGeners> movies){
+    public static Map<Integer, List<Integer>> CreateGenreMap(List<MovieWithGenres> movies){
         Map<Integer, List<Integer>> map = new HashMap<>();
-        for(MovieWithGeners movie : movies){
+        for(MovieWithGenres movie : movies){
             map.put(movie.getId(), TransformGenres(movie));
         }
         return map;
