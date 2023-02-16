@@ -1,5 +1,7 @@
 package com.gugusb.rsproject.service;
 
+import com.gugusb.rsproject.div_strategy.BaseStraPlus;
+import com.gugusb.rsproject.div_strategy.HO_Stra;
 import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class RSRatingService {
@@ -40,20 +43,29 @@ public class RSRatingService {
         return ratingMap;
     }
 
-    public Map<Integer, RSRating> getRatingMapForUser(RSUser user){
+    public Map<Integer, RSRating> getRatingMapForUserFromTarinSet(RSUser user, BaseStraPlus divStra){
         List<RSRating> ratingList = ratingRepository.findByUserid(user.getId());
         Map<Integer, RSRating> ratingMap = new HashMap<>();
         for (RSRating rating : ratingList){
-            ratingMap.put(rating.getMovieid(), rating);
+            if(divStra.isTrainSet(rating.getId())){
+                ratingMap.put(rating.getMovieid(), rating);
+            }else{
+                System.out.println("因为数据集筛选而剔除了评价样例" + rating.getId());
+            }
+
         }
         return ratingMap;
     }
 
-    public Map<Integer, List<Integer>> getRatedMovieByUser(RSUser user){
+    public Map<Integer, List<Integer>> getRatedMovieByUserFromTrainSet(RSUser user, BaseStraPlus divStra){
         Map<Integer, List<Integer>> map = new HashMap<>();
         for(RSRating rating : this.getRatingListByUser(user)){
-            int movieId = rating.getMovieid();
-            map.put(movieId, GenreTransformer.TransformGenres(genresRepository.findById(movieId).get()));
+            if(divStra.isTrainSet(rating.getId())){
+                int movieId = rating.getMovieid();
+                map.put(movieId, GenreTransformer.TransformGenres(genresRepository.findById(movieId).get()));
+            }else{
+                System.out.println("因为数据集筛选而剔除了电影样例" + rating.getId());
+            }
         }
         return map;
     }

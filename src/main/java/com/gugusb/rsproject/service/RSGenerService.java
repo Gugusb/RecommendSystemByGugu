@@ -22,13 +22,17 @@ public class RSGenerService {
         return genresRepository.findById(movieId).get();
     }
 
-    public Map<Integer, List<Integer>> getAllMovie(RSUser user){
+    public Map<Integer, List<Integer>> getAllMovieMap(){
         Map<Integer, List<Integer>> map = new HashMap<>();
         for(MovieWithGenres mwg : genresRepository.findAll()){
             int movieId = mwg.getId();
             map.put(movieId, GenreTransformer.TransformGenres(mwg));
         }
         return map;
+    }
+
+    public List<MovieWithGenres> getAllMovieList(){
+        return genresRepository.findAll();
     }
 
     public List<MovieWithGenres> TransMovieToMovieWithGenre(List<RSMovie> movies){
