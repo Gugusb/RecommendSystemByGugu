@@ -22,8 +22,8 @@ public class AlgorithmService {
         return cfAlg;
     }
 
-    public UCF_Alg getUCFAlg(){
-        UCF_Alg ucf_alg = new UCF_Alg();
+    public UCF_Alg getUCFAlg(int[][] rating_page, RSUser user){
+        UCF_Alg ucf_alg = new UCF_Alg(rating_page, user);
         return ucf_alg;
     }
 

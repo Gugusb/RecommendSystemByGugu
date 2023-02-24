@@ -18,11 +18,31 @@ import java.util.Set;
 
 @Service
 public class RSRatingService {
+    private int[][] rat_page;
+
     @Autowired
     RSRatingRepository ratingRepository;
 
     @Autowired
     RSGenresRepository genresRepository;
+
+    public List<RSRating> getAllRatings(){
+        return ratingRepository.findAll();
+    }
+
+    public int[][] getAllRatingPage(HO_Stra ho_stra){
+        if(rat_page == null){
+            rat_page = new int[6050][4000];
+            for(RSRating i : ratingRepository.findAll()){
+                //排除测试集数据
+                if(ho_stra.isTestSet(i.getId())){
+                    continue;
+                }
+                rat_page[i.getUserid()][i.getMovieid()] = i.getRating();
+            }
+        }
+        return rat_page;
+    }
 
     public List<RSRating> getRatingListByMovie(RSMovie movie){
         List<RSRating> ratingList = ratingRepository.findByMovieid(movie.getId());

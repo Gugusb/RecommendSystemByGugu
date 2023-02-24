@@ -8,6 +8,7 @@ import com.gugusb.rsproject.entity.RSUser;
 import com.gugusb.rsproject.service.*;
 import com.gugusb.rsproject.util.GenreTransformer;
 import com.gugusb.rsproject.util.MovieWithRate;
+import com.gugusb.rsproject.util.UserWithRate;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -80,13 +81,23 @@ public class TestController {
         return "suc";
     }
 
-    @RequestMapping(value = "/test/ss", method = RequestMethod.POST)
-    public String SSTest(HttpSession httpSession, Integer userid1, Integer userid2){
-        RSUser user1 = new RSUser();
-        user1.setId(userid1);
-        RSUser user2 = new RSUser();
-        user2.setId(userid2);
-        UCF_Alg ucf_alg = algorithmService.getUCFAlg();
-        return "" + ucf_alg.getSimilarityBetweenUser(ratingService.getRatingListByUser(user1), ratingService.getRatingListByUser(user2));
+    UCF_Alg ucf_alg;
+
+    @RequestMapping(value = "/test/initucf", method = RequestMethod.POST)
+    public String InitUCF(HttpSession httpSession, Integer userid){
+        RSUser user = new RSUser();
+        user.setId(userid);
+        HO_Stra ho_stra = new HO_Stra();
+        ucf_alg = algorithmService.getUCFAlg(ratingService.getAllRatingPage(ho_stra), user);
+        return "finish init";
     }
+
+    @RequestMapping(value = "/test/sim", method = RequestMethod.POST)
+    public String getSim(HttpSession httpSession){
+        for(UserWithRate user : ucf_alg.getTopNSimilarUser()){
+            System.out.println("" + user.getUserId() + " " + user.getRate());
+        }
+        return "finish";
+    }
+
 }
