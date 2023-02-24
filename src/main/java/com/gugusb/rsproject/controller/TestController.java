@@ -1,10 +1,8 @@
 package com.gugusb.rsproject.controller;
 
-import com.gugusb.rsproject.algorithm.CF_Alg;
+import com.gugusb.rsproject.algorithm.CB_Alg;
+import com.gugusb.rsproject.algorithm.UCF_Alg;
 import com.gugusb.rsproject.div_strategy.HO_Stra;
-import com.gugusb.rsproject.division_strategy.BaseStra;
-import com.gugusb.rsproject.division_strategy.HO_Strategy;
-import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
 import com.gugusb.rsproject.service.*;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -67,7 +64,7 @@ public class TestController {
 
         //获取算法对象
         //注入训练集
-        CF_Alg cfAlg = algorithmService.getCFAlg(user,
+        CB_Alg cfAlg = algorithmService.getCFAlg(user,
                 ratingService.getRatedMovieByUserFromTrainSet(user, ho_stra),
                 ratingService.getRatingMapForUserFromTarinSet(user, ho_stra));
 
@@ -83,4 +80,13 @@ public class TestController {
         return "suc";
     }
 
+    @RequestMapping(value = "/test/ss", method = RequestMethod.POST)
+    public String SSTest(HttpSession httpSession, Integer userid1, Integer userid2){
+        RSUser user1 = new RSUser();
+        user1.setId(userid1);
+        RSUser user2 = new RSUser();
+        user2.setId(userid2);
+        UCF_Alg ucf_alg = algorithmService.getUCFAlg();
+        return "" + ucf_alg.getSimilarityBetweenUser(ratingService.getRatingListByUser(user1), ratingService.getRatingListByUser(user2));
+    }
 }

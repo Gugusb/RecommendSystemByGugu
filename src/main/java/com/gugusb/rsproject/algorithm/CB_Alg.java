@@ -7,7 +7,7 @@ import com.gugusb.rsproject.util.MovieWithRate;
 
 import java.util.*;
 
-public class CF_Alg implements BaseAlg{
+public class CB_Alg implements BaseAlg{
 
     private RSUser user = null;
     private Map<Integer, List<Integer>> baseMovies;
@@ -24,7 +24,7 @@ public class CF_Alg implements BaseAlg{
      * @param movies  该用户打过分数的电影
      * @param ratings 该用户打过的分数评级
      */
-    public CF_Alg(RSUser user_, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings){
+    public CB_Alg(RSUser user_, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings){
         this.user = user_;
         this.baseMovies = movies;
         this.baseRatings = ratings;
