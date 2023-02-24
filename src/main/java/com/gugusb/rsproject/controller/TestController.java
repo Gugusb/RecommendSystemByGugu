@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -94,8 +95,9 @@ public class TestController {
 
     @RequestMapping(value = "/test/sim", method = RequestMethod.POST)
     public String getSim(HttpSession httpSession){
-        for(UserWithRate user : ucf_alg.getTopNSimilarUser()){
-            System.out.println("" + user.getUserId() + " " + user.getRate());
+        Map<Integer, Double> mapp = ucf_alg.getTopNSimilarUser();
+        for(Integer user : mapp.keySet()){
+            System.out.println("" + user + " " + mapp.get(user));
         }
         return "finish";
     }
