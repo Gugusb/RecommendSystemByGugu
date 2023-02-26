@@ -6,6 +6,7 @@ import com.gugusb.rsproject.util.ConstUtil;
 
 import java.util.*;
 
+@Deprecated
 public class HO_Strategy implements BaseStra{
     private static HO_Strategy singleton = null;
     List<RSRating> baseSet = null;

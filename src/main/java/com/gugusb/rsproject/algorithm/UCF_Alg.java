@@ -54,11 +54,6 @@ public class UCF_Alg implements BaseAlg{
 
         return sim;
     }
-    public double getSimilarityBetweenUserAndMovie(){
-        double sim = 0f;
-
-        return sim;
-    }
     public Map<Integer, Double> getTopNSimilarUser(){
         List<UserWithRate> userList = new ArrayList<>();
         for(int i = 1;i < ConstUtil.USER_COUNT;i ++){
@@ -71,7 +66,7 @@ public class UCF_Alg implements BaseAlg{
         Map<Integer, Double> userMap = new HashMap<>();
         int count = 0;
         for(UserWithRate useri : userList){
-            if(count < 10){
+            if(count < ConstUtil.UCF_USER_TOPN){
                 count ++;
                 userMap.put(useri.getUserId(), useri.getRate());
             }else break;
@@ -118,6 +113,9 @@ public class UCF_Alg implements BaseAlg{
                 if(rating_page[userId][i] != 0){
                     fz += rating_page[userId][i] * simUsers.get(userId);
                     fm += simUsers.get(userId);
+                }else{
+                    fz += ConstUtil.UCF_AVG_MOVIE_RATE * simUsers.get(userId);
+                    fm += simUsers.get(userId);
                 }
             }
             double dis = fz / fm;
@@ -133,7 +131,7 @@ public class UCF_Alg implements BaseAlg{
 
     @Override
     public List<MovieWithRate> getRecommandMovie(Map<Integer, List<Integer>> allMovies) {
-        return null;
+        return this.getTopNSimilarMovie();
     }
 
     @Override

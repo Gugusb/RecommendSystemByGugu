@@ -18,7 +18,6 @@ public class AlgorithmService {
 
     public CB_Alg getCFAlg(RSUser user, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings){
         CB_Alg cfAlg = new CB_Alg(user, movies, ratings);
-
         return cfAlg;
     }
 

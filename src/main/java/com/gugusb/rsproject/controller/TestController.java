@@ -95,9 +95,8 @@ public class TestController {
 
     @RequestMapping(value = "/test/sim", method = RequestMethod.POST)
     public String getSim(HttpSession httpSession){
-        Map<Integer, Double> mapp = ucf_alg.getTopNSimilarUser();
-        for(Integer user : mapp.keySet()){
-            System.out.println("" + user + " " + mapp.get(user));
+        for(MovieWithRate movie : ucf_alg.getRecommandMovie(null)){
+            System.out.println("" + movie.getMovieId() + " " + movie.getRate());
         }
         return "finish";
     }

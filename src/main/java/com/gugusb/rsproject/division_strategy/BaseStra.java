@@ -7,6 +7,7 @@ import javax.sql.RowSetInternal;
 import java.util.List;
 import java.util.Set;
 
+@Deprecated
 public interface BaseStra {
     List<RSRating> trainingSet = null;
     List<RSRating> testSet = null;
