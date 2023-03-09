@@ -1,6 +1,7 @@
 package com.gugusb.rsproject.service;
 
 import com.gugusb.rsproject.algorithm.CB_Alg;
+import com.gugusb.rsproject.algorithm.ICF_Alg;
 import com.gugusb.rsproject.algorithm.UCF_Alg;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
@@ -24,6 +25,11 @@ public class AlgorithmService {
     public UCF_Alg getUCFAlg(int[][] rating_page, RSUser user){
         UCF_Alg ucf_alg = new UCF_Alg(rating_page, user);
         return ucf_alg;
+    }
+
+    public ICF_Alg getICFAlg(int[][] rating_page, int[][] co_matrix, int[] spawn_count, RSUser user){
+        ICF_Alg icf_alg = new ICF_Alg(rating_page, co_matrix, spawn_count, user);
+        return icf_alg;
     }
 
 

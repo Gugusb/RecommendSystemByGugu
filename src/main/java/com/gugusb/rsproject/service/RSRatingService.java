@@ -7,6 +7,7 @@ import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
 import com.gugusb.rsproject.repository.RSGenresRepository;
 import com.gugusb.rsproject.repository.RSRatingRepository;
+import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.GenreTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,11 @@ import java.util.Set;
 
 @Service
 public class RSRatingService {
+
     private int[][] rat_page;
+    private int[][] co_matrix;
+    private int[] spawn_count;
+    private BaseStraPlus least_stra;
 
     @Autowired
     RSRatingRepository ratingRepository;
@@ -31,17 +36,56 @@ public class RSRatingService {
     }
 
     public int[][] getAllRatingPage(HO_Stra ho_stra){
-        if(rat_page == null){
-            rat_page = new int[6050][4000];
+        if(rat_page == null || (rat_page != null && ho_stra != least_stra)){
+            least_stra = ho_stra;
+            rat_page = new int[ConstUtil.USER_COUNT + 10][ConstUtil.MOVIE_COUNT + 10];
+            spawn_count = new int[ConstUtil.MOVIE_COUNT + 10];
             for(RSRating i : ratingRepository.findAll()){
                 //排除测试集数据
                 if(ho_stra.isTestSet(i.getId())){
                     continue;
                 }
+                if(i.getRating() >= ConstUtil.LIKE_LINE){
+                    spawn_count[i.getMovieid()] ++;
+                }
                 rat_page[i.getUserid()][i.getMovieid()] = i.getRating();
             }
         }
         return rat_page;
+    }
+
+    //获取每个电影出现的次数 建议在生成RatingPage后使用
+    public int[] getSpawnCount(HO_Stra ho_stra){
+        if(spawn_count == null){
+            for(RSRating i : ratingRepository.findAll()){
+                //排除测试集数据
+                if(ho_stra.isTestSet(i.getId())){
+                    continue;
+                }
+                if(i.getRating() >= ConstUtil.LIKE_LINE){
+                    spawn_count[i.getMovieid()] ++;
+                }
+            }
+        }
+        return spawn_count;
+    }
+
+    public int[][] getCoMatrix(HO_Stra ho_stra){
+        if(co_matrix == null || (co_matrix != null && ho_stra != least_stra)){
+            int[][] t_page = this.getAllRatingPage(ho_stra);
+            co_matrix = new int[ConstUtil.MOVIE_COUNT + 10][ConstUtil.MOVIE_COUNT + 10];
+            for(int movieid1 = 1;movieid1 < ConstUtil.MOVIE_COUNT + 10;movieid1 ++){
+                for(int movieid2 = movieid1 + 1;movieid2 < ConstUtil.MOVIE_COUNT + 10;movieid2 ++){
+                    for(int userid = 1;userid < ConstUtil.USER_COUNT + 10;userid ++){
+                        if(t_page[userid][movieid1] > 0 && t_page[userid][movieid2] > 0){
+                            co_matrix[movieid1][movieid2] ++;
+                            co_matrix[movieid2][movieid1] ++;
+                        }
+                    }
+                }
+            }
+        }
+        return co_matrix;
     }
 
     public List<RSRating> getRatingListByMovie(RSMovie movie){

@@ -1,6 +1,7 @@
 package com.gugusb.rsproject.controller;
 
 import com.gugusb.rsproject.algorithm.CB_Alg;
+import com.gugusb.rsproject.algorithm.ICF_Alg;
 import com.gugusb.rsproject.algorithm.UCF_Alg;
 import com.gugusb.rsproject.div_strategy.HO_Stra;
 import com.gugusb.rsproject.entity.RSRating;
@@ -82,6 +83,7 @@ public class TestController {
         return "suc";
     }
 
+    //==========================UCF测试==========================
     UCF_Alg ucf_alg;
 
     @RequestMapping(value = "/test/initucf", method = RequestMethod.POST)
@@ -90,7 +92,7 @@ public class TestController {
         user.setId(userid);
         HO_Stra ho_stra = new HO_Stra();
         ucf_alg = algorithmService.getUCFAlg(ratingService.getAllRatingPage(ho_stra), user);
-        return "finish init";
+        return "UCF finish init";
     }
 
     @RequestMapping(value = "/test/sim", method = RequestMethod.POST)
@@ -101,4 +103,15 @@ public class TestController {
         return "finish";
     }
 
+    //==========================ICF测试==========================
+    ICF_Alg icf_alg;
+
+    @RequestMapping(value = "/test/initicf", method = RequestMethod.POST)
+    public String InitICF(HttpSession httpSession, Integer userid){
+        RSUser user = new RSUser();
+        user.setId(userid);
+        HO_Stra ho_stra = new HO_Stra();
+        icf_alg = algorithmService.getICFAlg(ratingService.getAllRatingPage(ho_stra), ratingService.getCoMatrix(ho_stra), ratingService.getSpawnCount(ho_stra), user);
+        return "ICF finish init";
+    }
 }
