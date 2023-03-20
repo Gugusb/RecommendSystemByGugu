@@ -9,13 +9,11 @@ import com.gugusb.rsproject.repository.RSGenresRepository;
 import com.gugusb.rsproject.repository.RSRatingRepository;
 import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.GenreTransformer;
+import com.gugusb.rsproject.util.MovieWithRate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class RSRatingService {
@@ -70,6 +68,7 @@ public class RSRatingService {
         return spawn_count;
     }
 
+    //获取所有电影评价的共现矩阵
     public int[][] getCoMatrix(HO_Stra ho_stra){
         if(co_matrix == null || (co_matrix != null && ho_stra != least_stra)){
             int[][] t_page = this.getAllRatingPage(ho_stra);
@@ -86,6 +85,42 @@ public class RSRatingService {
             }
         }
         return co_matrix;
+    }
+
+    //获取仅针对部分电影相关评价的共现矩阵
+    public int[][] getCoMatrixByMovieList(List<MovieWithRate> movieList){
+        int[][] cm = new int[ConstUtil.MOVIE_COUNT + 10][ConstUtil.MOVIE_COUNT + 10];
+        //Step1.构建电影ID的Collection
+        List<Integer> movieIds = new ArrayList<>();
+        for(MovieWithRate mwr : movieList){
+            movieIds.add(mwr.getMovieId());
+        }
+        System.out.println("Step1 Finish");
+        //Step2.通过sql语句搜索出所有相关的评价
+        List<RSRating> ratingList = ratingRepository.findByMovieidIn(movieIds);
+        Set<Integer> userList = new HashSet<>();
+        System.out.println("Step2 Finish");
+        //Step3.构建评价矩阵+用户set
+        int[][] ratingMatrix = new int[ConstUtil.USER_COUNT + 5][ConstUtil.MOVIE_COUNT + 5];
+        for(RSRating rating : ratingList){
+            ratingMatrix[rating.getUserid()][rating.getMovieid()] = rating.getRating();
+            userList.add(rating.getUserid());
+        }
+        System.out.println("Step3 Finish");
+        //Step4.构建共现矩阵
+        for(int i = 0;i < movieIds.size();i ++){
+            for(int j = i + 1;j < movieIds.size();j ++){
+                for(Integer userId : userList){
+                    if(ratingMatrix[userId][movieIds.get(i)] > 0 && ratingMatrix[userId][movieIds.get(j)] > 0){
+                        System.out.println("movie:" + movieIds.get(i) + " and movie:" + movieIds.get(j) + " coappear with " + userId);
+                        cm[movieIds.get(i)][movieIds.get(j)] += 1;
+                        cm[movieIds.get(j)][movieIds.get(i)] += 1;
+                    }
+                }
+            }
+        }
+        System.out.println("Step4 Finish");
+        return cm;
     }
 
     public List<RSRating> getRatingListByMovie(RSMovie movie){

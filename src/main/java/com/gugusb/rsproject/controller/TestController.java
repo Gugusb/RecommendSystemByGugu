@@ -2,6 +2,7 @@ package com.gugusb.rsproject.controller;
 
 import com.gugusb.rsproject.algorithm.CB_Alg;
 import com.gugusb.rsproject.algorithm.ICF_Alg;
+import com.gugusb.rsproject.algorithm.MixAlg_1;
 import com.gugusb.rsproject.algorithm.UCF_Alg;
 import com.gugusb.rsproject.div_strategy.HO_Stra;
 import com.gugusb.rsproject.entity.RSRating;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,5 +116,35 @@ public class TestController {
         HO_Stra ho_stra = new HO_Stra();
         icf_alg = algorithmService.getICFAlg(ratingService.getAllRatingPage(ho_stra), ratingService.getCoMatrix(ho_stra), ratingService.getSpawnCount(ho_stra), user);
         return "ICF finish init";
+    }
+
+    //==========================Mix1测试==========================
+    //测试一下生成限定电影集合的共现矩阵的运行速度
+    @RequestMapping(value = "/test/cmt", method = RequestMethod.POST)
+    public String CMTest1(HttpSession httpSession, Integer movie1, Integer movie2){
+        List<MovieWithRate> movieList = new ArrayList<>();
+        for(int i = movie1;i < movie2;i ++){
+            movieList.add(new MovieWithRate(i, 5));
+        }
+        int[][] cm = ratingService.getCoMatrixByMovieList(movieList);
+        return "finish" + cm[movie1][movie1 + 1];
+    }
+
+    MixAlg_1 mixAlg1;
+    @RequestMapping(value = "/test/mix1init", method = RequestMethod.POST)
+    public String InitMix1(HttpSession httpSession, Integer userid){
+        HO_Stra ho_stra = new HO_Stra();
+        RSUser user = new RSUser();
+        user.setId(userid);
+        mixAlg1 = algorithmService.getMixAlg_1(ratingService.getAllRatingPage(ho_stra), ratingService.getSpawnCount(ho_stra), user);
+        return "Init mixalg1 finish";
+    }
+
+    @RequestMapping(value = "/test/mxi1test", method = RequestMethod.POST)
+    public String Mix1Test(HttpSession httpSession){
+        for(MovieWithRate movie : mixAlg1.getRecommandMovie(null)){
+            System.out.println("" + movie.getMovieId() + " " + movie.getRate());
+        }
+        return "finish";
     }
 }

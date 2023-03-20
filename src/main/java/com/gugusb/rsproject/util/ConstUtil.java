@@ -8,5 +8,5 @@ public class ConstUtil {
     public static final double UCF_AVG_MOVIE_RATE = 2.5;
     public static int MOVIE_COUNT = 3952;
     public static int USER_COUNT = 6040;
-    public static int LIKE_LINE = 3;
+    public static int LIKE_LINE = 4;
 }
