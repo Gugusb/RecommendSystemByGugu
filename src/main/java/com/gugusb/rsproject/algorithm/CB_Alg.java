@@ -15,7 +15,7 @@ public class CB_Alg implements BaseAlg{
     private List<Double> genreSimList;
     private List<Double> avgRateList;
 
-
+    private Map<Integer, List<Integer>> allMovies;
 
     /**
      * cf alg
@@ -24,10 +24,11 @@ public class CB_Alg implements BaseAlg{
      * @param movies  该用户打过分数的电影
      * @param ratings 该用户打过的分数评级
      */
-    public CB_Alg(RSUser user_, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings){
+    public CB_Alg(RSUser user_, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings, Map<Integer, List<Integer>> allMovies){
         this.user = user_;
         this.baseMovies = movies;
         this.baseRatings = ratings;
+        this.allMovies = allMovies;
         this.avgRateList = new ArrayList<>();
         this.genreSimList = new ArrayList<>();
         genreSimList.add(0.0);
@@ -36,6 +37,10 @@ public class CB_Alg implements BaseAlg{
             genreSimList.add(getGenreSim(i));
             avgRateList.add(getGenreAvgRate(i));
         }
+    }
+
+    public List<Integer> getGenreListById(int movieId){
+        return this.allMovies.get(movieId);
     }
 
     /**
@@ -87,7 +92,7 @@ public class CB_Alg implements BaseAlg{
      * @param movieGenre 电影流派
      * @return double
      */
-    private double getMovieRateWithUser(List<Integer> movieGenre){
+    public double getMovieRateWithUser(List<Integer> movieGenre){
         double fz = 0.0;
         double fm = 0.0;
 
@@ -106,7 +111,7 @@ public class CB_Alg implements BaseAlg{
     }
 
     @Override
-    public List<MovieWithRate> getRecommandMovie(Map<Integer, List<Integer>> allMovies) {
+    public List<MovieWithRate> getRecommandMovie() {
         List<MovieWithRate> list = new ArrayList<>();
         for(int i : allMovies.keySet()){
             //排除已经看过的电影

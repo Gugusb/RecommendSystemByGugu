@@ -9,7 +9,7 @@ import java.util.Map;
 //线性加权混合算法
 public class MixAlg_3 implements BaseAlg{
     @Override
-    public List<MovieWithRate> getRecommandMovie(Map<Integer, List<Integer>> allMovies) {
+    public List<MovieWithRate> getRecommandMovie() {
         //Step1.计算出CB得到的电影条目及赋分情况
         //Step2.计算出UCF得到的电影条目及赋分情况
         //Step3.对电影进行加权重新评分

@@ -1,16 +1,19 @@
 package com.gugusb.rsproject.service;
 
-import com.gugusb.rsproject.algorithm.CB_Alg;
-import com.gugusb.rsproject.algorithm.ICF_Alg;
-import com.gugusb.rsproject.algorithm.MixAlg_1;
-import com.gugusb.rsproject.algorithm.UCF_Alg;
+import com.gugusb.rsproject.algorithm.*;
+import com.gugusb.rsproject.div_strategy.BaseStraPlus;
+import com.gugusb.rsproject.div_strategy.HO_Stra;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
+import com.gugusb.rsproject.repository.RSGenresRepository;
 import com.gugusb.rsproject.repository.RSMovieRepository;
 import com.gugusb.rsproject.repository.RSRatingRepository;
+import com.gugusb.rsproject.util.CBBaseData;
 import com.gugusb.rsproject.util.ConstUtil;
+import com.gugusb.rsproject.util.GenreTransformer;
 import com.gugusb.rsproject.util.MovieWithRate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,9 +24,11 @@ public class AlgorithmService {
     RSMovieRepository movieRepository;
     @Autowired
     RSRatingRepository ratingRepository;
+    @Autowired
+    RSGenresRepository genresRepository;
 
-    public CB_Alg getCFAlg(RSUser user, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings){
-        CB_Alg cfAlg = new CB_Alg(user, movies, ratings);
+    public CB_Alg getCFAlg(RSUser user, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings, Map<Integer, List<Integer>> allMovies){
+        CB_Alg cfAlg = new CB_Alg(user, movies, ratings, allMovies);
         return cfAlg;
     }
 
@@ -41,7 +46,7 @@ public class AlgorithmService {
         MixAlg_1 mixAlg1;
         //Step1.使用UCF推算出初始推荐电影
         UCF_Alg ucf_alg = new UCF_Alg(rating_page, user);
-        List<MovieWithRate> ucfMovie = ucf_alg.getRecommandMovie(null);
+        List<MovieWithRate> ucfMovie = ucf_alg.getRecommandMovie();
         //Step2.对目标电影进行共现矩阵构建并生成ICF对象
         //  Step2.1整合用户喜欢的电影和第一步推荐的电影
         for(int i = 1; i < ConstUtil.MOVIE_COUNT; i ++) {
@@ -56,6 +61,27 @@ public class AlgorithmService {
         //Step3创建混合算法1
         mixAlg1 = new MixAlg_1(ucf_alg, icf_alg);
         return mixAlg1;
+    }
+
+    public MixAlg_2 getMixAlg_2(int[][] rating_page, HO_Stra ho_stra, Map<Integer, List<Integer>> allMovies, RSUser user){
+        MixAlg_2 mixAlg2;
+        //Step1.创建UCF 使用其筛选出和目标用户相似度最高的用户
+        UCF_Alg ucf_alg = new UCF_Alg(rating_page, user);
+        List<Integer> users = ucf_alg.getTopNSimilarUser().keySet().stream().toList();
+        //Step2.使用拿到的用户表去拿到相应的数据以多次启动CB算法
+        Map<Integer, CBBaseData> cb_datas = new HashMap<>();
+        for(Integer userId : users){
+            RSUser user1 = new RSUser();
+            user1.setId(userId);
+            cb_datas.put(userId, new CBBaseData(user1,
+                    getRatedMovieByUserFromTrainSet(user1, ho_stra),
+                    getRatingMapForUserFromTarinSet(user1, ho_stra),
+                    allMovies));
+        }
+        //Step3.创建混合算法对象 将拿到的用户表数据传入构造方法
+        mixAlg2 = new MixAlg_2(ucf_alg, rating_page, cb_datas, user);
+
+        return mixAlg2;
     }
 
     //获取仅针对部分电影相关评价的共现矩阵
@@ -95,6 +121,38 @@ public class AlgorithmService {
         }
         System.out.println("Step4 Finish");
         return cm;
+    }
+
+    public List<RSRating> getRatingListByUser(RSUser user){
+        List<RSRating> ratingList = ratingRepository.findByUserid(user.getId());
+        return ratingList;
+    }
+
+    public Map<Integer, RSRating> getRatingMapForUserFromTarinSet(RSUser user, BaseStraPlus divStra){
+        List<RSRating> ratingList = ratingRepository.findByUserid(user.getId());
+        Map<Integer, RSRating> ratingMap = new HashMap<>();
+        for (RSRating rating : ratingList){
+            if(divStra.isTrainSet(rating.getId())){
+                ratingMap.put(rating.getMovieid(), rating);
+            }else{
+                //System.out.println("因为数据集筛选而剔除了评价样例" + rating.getId());
+            }
+
+        }
+        return ratingMap;
+    }
+
+    public Map<Integer, List<Integer>> getRatedMovieByUserFromTrainSet(RSUser user, BaseStraPlus divStra){
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for(RSRating rating : this.getRatingListByUser(user)){
+            if(divStra.isTrainSet(rating.getId())){
+                int movieId = rating.getMovieid();
+                map.put(movieId, GenreTransformer.TransformGenres(genresRepository.findById(movieId).get()));
+            }else{
+                //System.out.println("因为数据集筛选而剔除了电影样例" + rating.getId());
+            }
+        }
+        return map;
     }
 
 

@@ -19,10 +19,10 @@ public class MixAlg_1 implements BaseAlg{
         this.icf_alg = icf_alg;
     }
     @Override
-    public List<MovieWithRate> getRecommandMovie(Map<Integer, List<Integer>> allMovies) {
+    public List<MovieWithRate> getRecommandMovie() {
         List<MovieWithRate> movieWithRateList = new ArrayList<>();
         //Step1.获取所有用户可能感兴趣的电影
-        for(MovieWithRate movie : ucf_alg.getRecommandMovie(null)){
+        for(MovieWithRate movie : ucf_alg.getRecommandMovie()){
             //Step2.计算该电影的兴趣评分
             int movieId = movie.getMovieId();
             movieWithRateList.add(new MovieWithRate(movieId, icf_alg.getInterestToMovie(movieId)));

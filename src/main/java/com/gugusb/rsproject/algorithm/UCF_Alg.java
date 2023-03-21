@@ -126,13 +126,15 @@ public class UCF_Alg implements BaseAlg{
         Collections.sort(movieList);
         return movieList;
     }
+
+
     public UCF_Alg(int[][] rating_page, RSUser user){
         this.user = user;
         this.rating_page = rating_page;
     }
 
     @Override
-    public List<MovieWithRate> getRecommandMovie(Map<Integer, List<Integer>> allMovies) {
+    public List<MovieWithRate> getRecommandMovie() {
         return this.getTopNSimilarMovie();
     }
 

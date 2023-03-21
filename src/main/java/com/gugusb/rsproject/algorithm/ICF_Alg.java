@@ -80,7 +80,7 @@ public class ICF_Alg implements BaseAlg{
 
 
     @Override
-    public List<MovieWithRate> getRecommandMovie(Map<Integer, List<Integer>> allMovies) {
+    public List<MovieWithRate> getRecommandMovie() {
         List<MovieWithRate> movieWithRateList = new ArrayList<>();
         //Step1.获取所有用户可能感兴趣的电影
         for(Integer movieId : this.getInterestMovies()){

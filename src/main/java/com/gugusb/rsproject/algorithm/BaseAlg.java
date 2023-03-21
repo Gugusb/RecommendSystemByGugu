@@ -10,7 +10,7 @@ import java.util.Map;
 public interface BaseAlg {
     RSUser user = null;
 
-    List<MovieWithRate> getRecommandMovie(Map<Integer, List<Integer> > allMovies);
+    List<MovieWithRate> getRecommandMovie();
 
     float getRecall(List<RSMovie> movies);
     float getPrecision(List<RSMovie> movies);

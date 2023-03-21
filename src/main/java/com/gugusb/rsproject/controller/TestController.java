@@ -1,9 +1,6 @@
 package com.gugusb.rsproject.controller;
 
-import com.gugusb.rsproject.algorithm.CB_Alg;
-import com.gugusb.rsproject.algorithm.ICF_Alg;
-import com.gugusb.rsproject.algorithm.MixAlg_1;
-import com.gugusb.rsproject.algorithm.UCF_Alg;
+import com.gugusb.rsproject.algorithm.*;
 import com.gugusb.rsproject.div_strategy.HO_Stra;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
@@ -72,11 +69,12 @@ public class TestController {
         //注入训练集
         CB_Alg cfAlg = algorithmService.getCFAlg(user,
                 ratingService.getRatedMovieByUserFromTrainSet(user, ho_stra),
-                ratingService.getRatingMapForUserFromTarinSet(user, ho_stra));
+                ratingService.getRatingMapForUserFromTarinSet(user, ho_stra),
+                GenreTransformer.CreateGenreMap(generService.getAllMovieList()));
 
         //计算结果
         for(MovieWithRate movieWithRate :
-                cfAlg.getRecommandMovie(GenreTransformer.CreateGenreMap(generService.getAllMovieList()))){
+                cfAlg.getRecommandMovie()){
             System.out.println("" + movieWithRate.getMovieId()  + " " + movieWithRate.getRate());
         }
 
@@ -100,7 +98,7 @@ public class TestController {
 
     @RequestMapping(value = "/test/sim", method = RequestMethod.POST)
     public String getSim(HttpSession httpSession){
-        for(MovieWithRate movie : ucf_alg.getRecommandMovie(null)){
+        for(MovieWithRate movie : ucf_alg.getRecommandMovie()){
             System.out.println("" + movie.getMovieId() + " " + movie.getRate());
         }
         return "finish";
@@ -142,7 +140,26 @@ public class TestController {
 
     @RequestMapping(value = "/test/mxi1test", method = RequestMethod.POST)
     public String Mix1Test(HttpSession httpSession){
-        for(MovieWithRate movie : mixAlg1.getRecommandMovie(null)){
+        for(MovieWithRate movie : mixAlg1.getRecommandMovie()){
+            System.out.println("" + movie.getMovieId() + " " + movie.getRate());
+        }
+        return "finish";
+    }
+
+    //==========================Mix2测试==========================
+    MixAlg_2 mixAlg2;
+    @RequestMapping(value = "/test/mix2init", method = RequestMethod.POST)
+    public String InitMix2(HttpSession httpSession, Integer userid){
+        HO_Stra ho_stra = new HO_Stra();
+        RSUser user = new RSUser();
+        user.setId(userid);
+        mixAlg2 = algorithmService.getMixAlg_2(ratingService.getAllRatingPage(ho_stra), ho_stra, GenreTransformer.CreateGenreMap(generService.getAllMovieList()), user);
+        return "Init mixalg2 finish";
+    }
+
+    @RequestMapping(value = "/test/mxi2test", method = RequestMethod.POST)
+    public String Mix2Test(HttpSession httpSession){
+        for(MovieWithRate movie : mixAlg2.getRecommandMovie()){
             System.out.println("" + movie.getMovieId() + " " + movie.getRate());
         }
         return "finish";
