@@ -93,17 +93,17 @@ public class ICF_Alg implements BaseAlg{
     }
 
     @Override
-    public float getRecall(List<RSMovie> movies) {
+    public double getRecall(List<RSMovie> movies) {
         return 0;
     }
 
     @Override
-    public float getPrecision(List<RSMovie> movies) {
+    public double getPrecision(List<RSMovie> movies) {
         return 0;
     }
 
     @Override
-    public float getAccuracy(List<RSMovie> movies) {
+    public double getAccuracy(List<RSMovie> movies) {
         return 0;
     }
 }

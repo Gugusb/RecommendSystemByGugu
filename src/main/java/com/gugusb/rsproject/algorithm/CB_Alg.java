@@ -3,13 +3,16 @@ package com.gugusb.rsproject.algorithm;
 import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
+import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.MovieWithRate;
+import com.gugusb.rsproject.util.ResultEvaluation;
 
 import java.util.*;
 
 public class CB_Alg implements BaseAlg{
 
     private RSUser user = null;
+    private List<MovieWithRate> resultMovies;
     private Map<Integer, List<Integer>> baseMovies;
     private Map<Integer, RSRating> baseRatings;
     private List<Double> genreSimList;
@@ -121,21 +124,25 @@ public class CB_Alg implements BaseAlg{
             list.add(new MovieWithRate(i, getMovieRateWithUser(allMovies.get(i))));
         }
         Collections.sort(list);
+        if(list.size() >= ConstUtil.RECOMMAND_COUNT){
+            list = list.subList(0, ConstUtil.RECOMMAND_COUNT);
+        }
+        this.resultMovies = list;
         return list;
     }
 
     @Override
-    public float getRecall(List<RSMovie> movies) {
-        return 0;
+    public double getRecall(List<RSMovie> movies) {
+        return ResultEvaluation.getRecall(resultMovies, movies);
     }
 
     @Override
-    public float getPrecision(List<RSMovie> movies) {
-        return 0;
+    public double getPrecision(List<RSMovie> movies) {
+        return ResultEvaluation.getPrecision(resultMovies, movies);
     }
 
     @Override
-    public float getAccuracy(List<RSMovie> movies) {
-        return 0;
+    public double getAccuracy(List<RSMovie> movies) {
+        return ResultEvaluation.getAccuracy(resultMovies, movies);
     }
 }

@@ -1,11 +1,13 @@
 package com.gugusb.rsproject.algorithm;
 
+import com.gugusb.rsproject.div_strategy.BaseStraPlus;
 import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
 import com.gugusb.rsproject.repository.RSRatingRepository;
 import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.MovieWithRate;
+import com.gugusb.rsproject.util.ResultEvaluation;
 import com.gugusb.rsproject.util.UserWithRate;
 import io.swagger.models.auth.In;
 import org.hibernate.type.internal.ImmutableNamedBasicTypeImpl;
@@ -16,6 +18,7 @@ import java.util.*;
 
 public class UCF_Alg implements BaseAlg{
 
+    private List<MovieWithRate> resultMovies;
     private RSUser user = null;
     private int[][] rating_page;
 
@@ -127,6 +130,9 @@ public class UCF_Alg implements BaseAlg{
         return movieList;
     }
 
+    public RSUser getUser(){
+        return this.user;
+    }
 
     public UCF_Alg(int[][] rating_page, RSUser user){
         this.user = user;
@@ -135,22 +141,26 @@ public class UCF_Alg implements BaseAlg{
 
     @Override
     public List<MovieWithRate> getRecommandMovie() {
-        return this.getTopNSimilarMovie();
+        this.resultMovies = this.getTopNSimilarMovie();
+        if(this.resultMovies.size() > ConstUtil.RECOMMAND_COUNT){
+            this.resultMovies = this.resultMovies.subList(0, ConstUtil.RECOMMAND_COUNT);
+        }
+        return this.resultMovies;
     }
 
     @Override
-    public float getRecall(List<RSMovie> movies) {
-        return 0;
+    public double getRecall(List<RSMovie> movies) {
+        return ResultEvaluation.getRecall(resultMovies, movies);
     }
 
     @Override
-    public float getPrecision(List<RSMovie> movies) {
-        return 0;
+    public double getPrecision(List<RSMovie> movies) {
+        return ResultEvaluation.getPrecision(resultMovies, movies);
     }
 
     @Override
-    public float getAccuracy(List<RSMovie> movies) {
-        return 0;
+    public double getAccuracy(List<RSMovie> movies) {
+        return ResultEvaluation.getAccuracy(resultMovies, movies);
     }
     @Deprecated
     //不用构造函数传入参数的相似度匹配方法 涉及到大量IO 运行效率极低 故此已废弃

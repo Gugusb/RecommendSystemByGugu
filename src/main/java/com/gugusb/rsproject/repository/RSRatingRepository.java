@@ -16,5 +16,4 @@ public interface RSRatingRepository extends JpaRepository<RSRating, Integer> {
 
     List<RSRating> findByMovieidIn(Collection<Integer> movieids);
 
-
 }

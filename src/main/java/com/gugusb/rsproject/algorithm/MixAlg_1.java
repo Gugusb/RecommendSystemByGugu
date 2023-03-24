@@ -2,7 +2,9 @@ package com.gugusb.rsproject.algorithm;
 
 import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSUser;
+import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.MovieWithRate;
+import com.gugusb.rsproject.util.ResultEvaluation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +15,7 @@ import java.util.Map;
 public class MixAlg_1 implements BaseAlg{
     ICF_Alg icf_alg;
     UCF_Alg ucf_alg;
+    private List<MovieWithRate> resultMovies;
 
     public MixAlg_1(UCF_Alg ucf_alg, ICF_Alg icf_alg){
         this.ucf_alg = ucf_alg;
@@ -29,21 +32,25 @@ public class MixAlg_1 implements BaseAlg{
         }
         //Step3.对所有电影进行评分排序
         Collections.sort(movieWithRateList);
+        if(movieWithRateList.size() > ConstUtil.RECOMMAND_COUNT){
+            movieWithRateList = movieWithRateList.subList(0, ConstUtil.RECOMMAND_COUNT);
+        }
+        this.resultMovies = movieWithRateList;
         return movieWithRateList;
     }
 
     @Override
-    public float getRecall(List<RSMovie> movies) {
-        return 0;
+    public double getRecall(List<RSMovie> movies) {
+        return ResultEvaluation.getRecall(resultMovies, movies);
     }
 
     @Override
-    public float getPrecision(List<RSMovie> movies) {
-        return 0;
+    public double getPrecision(List<RSMovie> movies) {
+        return ResultEvaluation.getPrecision(resultMovies, movies);
     }
 
     @Override
-    public float getAccuracy(List<RSMovie> movies) {
-        return 0;
+    public double getAccuracy(List<RSMovie> movies) {
+        return ResultEvaluation.getAccuracy(resultMovies, movies);
     }
 }

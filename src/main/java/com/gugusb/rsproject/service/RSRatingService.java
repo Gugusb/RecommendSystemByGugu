@@ -169,4 +169,18 @@ public class RSRatingService {
         return map;
     }
 
+    public List<RSMovie> getLikeMovieByUserWithTestSet(RSUser user, BaseStraPlus divStra){
+        List<RSMovie> ans = new ArrayList<>();
+        for(RSRating rating : ratingRepository.findByUserid(user.getId())){
+            if(rating.getRating() >= ConstUtil.LIKE_LINE_FOR_TEST){
+                if(divStra.isTestSet(rating.getId())){
+                    RSMovie movie = new RSMovie();
+                    movie.setId(rating.getMovieid());
+                    ans.add(movie);
+                }
+            }
+        }
+        return ans;
+    }
+
 }

@@ -12,7 +12,7 @@ public interface BaseAlg {
 
     List<MovieWithRate> getRecommandMovie();
 
-    float getRecall(List<RSMovie> movies);
-    float getPrecision(List<RSMovie> movies);
-    float getAccuracy(List<RSMovie> movies);
+    double getRecall(List<RSMovie> movies);
+    double getPrecision(List<RSMovie> movies);
+    double getAccuracy(List<RSMovie> movies);
 }

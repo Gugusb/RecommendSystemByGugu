@@ -42,7 +42,7 @@ public class AlgorithmService {
         return icf_alg;
     }
 
-    public MixAlg_1 getMixAlg_1(int[][] rating_page, int[] spawn_count, RSUser user){
+    public MixAlg_1 getMixAlg_1(int[][] rating_page, int[] spawn_count, BaseStraPlus divStra, RSUser user){
         MixAlg_1 mixAlg1;
         //Step1.使用UCF推算出初始推荐电影
         UCF_Alg ucf_alg = new UCF_Alg(rating_page, user);

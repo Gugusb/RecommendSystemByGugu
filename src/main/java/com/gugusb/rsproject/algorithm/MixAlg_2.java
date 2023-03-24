@@ -5,12 +5,14 @@ import com.gugusb.rsproject.entity.RSUser;
 import com.gugusb.rsproject.util.CBBaseData;
 import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.MovieWithRate;
+import com.gugusb.rsproject.util.ResultEvaluation;
 
 import java.util.*;
 
 //插入式混合算法
 public class MixAlg_2 implements BaseAlg{
     RSUser user;
+    private List<MovieWithRate> resultMovies;
     UCF_Alg ucf_alg;
     int[][] rating_page;
     Map<Integer, CBBaseData> cb_datas;
@@ -74,21 +76,25 @@ public class MixAlg_2 implements BaseAlg{
         //Step1.使用UCF进行基础数据构建
         //Step2.使用CB得到的分数当作计算用户和电影距离时出现空白分数的代替
         //Step2.输出赋分排序后的电影条目
-        return getTopNSimilarMovieWithCB();
+        this.resultMovies = getTopNSimilarMovieWithCB();
+        if(this.resultMovies.size() > ConstUtil.RECOMMAND_COUNT){
+            this.resultMovies = this.resultMovies.subList(0, ConstUtil.RECOMMAND_COUNT);
+        }
+        return resultMovies;
     }
 
     @Override
-    public float getRecall(List<RSMovie> movies) {
-        return 0;
+    public double getRecall(List<RSMovie> movies) {
+        return ResultEvaluation.getRecall(resultMovies, movies);
     }
 
     @Override
-    public float getPrecision(List<RSMovie> movies) {
-        return 0;
+    public double getPrecision(List<RSMovie> movies) {
+        return ResultEvaluation.getPrecision(resultMovies, movies);
     }
 
     @Override
-    public float getAccuracy(List<RSMovie> movies) {
-        return 0;
+    public double getAccuracy(List<RSMovie> movies) {
+        return ResultEvaluation.getAccuracy(resultMovies, movies);
     }
 }
