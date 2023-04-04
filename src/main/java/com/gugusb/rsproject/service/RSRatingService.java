@@ -149,7 +149,7 @@ public class RSRatingService {
             if(divStra.isTrainSet(rating.getId())){
                 ratingMap.put(rating.getMovieid(), rating);
             }else{
-                System.out.println("因为数据集筛选而剔除了评价样例" + rating.getId());
+                System.out.println("[RatingMap]因为数据集筛选而剔除了评价样例" + rating.getId() + " 电影ID:" + rating.getMovieid());
             }
 
         }
@@ -163,7 +163,7 @@ public class RSRatingService {
                 int movieId = rating.getMovieid();
                 map.put(movieId, GenreTransformer.TransformGenres(genresRepository.findById(movieId).get()));
             }else{
-                System.out.println("因为数据集筛选而剔除了电影样例" + rating.getId());
+                System.out.println("[MovieMap]因为数据集筛选而剔除了评价样例" + rating.getId() + " 电影ID:" + rating.getMovieid());
             }
         }
         return map;

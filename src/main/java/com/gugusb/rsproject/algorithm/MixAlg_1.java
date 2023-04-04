@@ -32,11 +32,16 @@ public class MixAlg_1 implements BaseAlg{
         }
         //Step3.对所有电影进行评分排序
         Collections.sort(movieWithRateList);
-        if(movieWithRateList.size() > ConstUtil.RECOMMAND_COUNT){
-            movieWithRateList = movieWithRateList.subList(0, ConstUtil.RECOMMAND_COUNT);
+        this.resultMovies = new ArrayList<>();
+        for(MovieWithRate movie : movieWithRateList){
+            if(movie.getRate() >= ConstUtil.RECOMMAND_LINE_M1){
+                this.resultMovies.add(movie);
+            }
         }
-        this.resultMovies = movieWithRateList;
-        return movieWithRateList;
+        if(this.resultMovies.size() < ConstUtil.RECOMMAND_COUNT_M1){
+            this.resultMovies.addAll(movieWithRateList.subList(this.resultMovies.size(), ConstUtil.RECOMMAND_COUNT));
+        }
+        return this.resultMovies;
     }
 
     @Override

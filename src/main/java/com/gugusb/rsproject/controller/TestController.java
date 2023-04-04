@@ -2,6 +2,7 @@ package com.gugusb.rsproject.controller;
 
 import com.gugusb.rsproject.algorithm.*;
 import com.gugusb.rsproject.div_strategy.HO_Stra;
+import com.gugusb.rsproject.entity.RSLog;
 import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,8 @@ public class TestController {
     RSMovieService movieService;
     @Autowired
     RSGenerService generService;
+    @Autowired
+    RSLogService logService;
 
     @RequestMapping(value = "/test/test", method = RequestMethod.POST)
     public String test(HttpSession httpSession, Integer id){
@@ -73,7 +77,8 @@ public class TestController {
         CB_Alg cfAlg = algorithmService.getCFAlg(user,
                 ratingService.getRatedMovieByUserFromTrainSet(user, ho_stra),
                 ratingService.getRatingMapForUserFromTarinSet(user, ho_stra),
-                GenreTransformer.CreateGenreMap(generService.getAllMovieList()));
+                GenreTransformer.CreateGenreMap(generService.getAllMovieList()),
+                ho_stra);
 
         //计算结果
         for(MovieWithRate movieWithRate :
@@ -206,5 +211,13 @@ public class TestController {
         r = mixAlg2.getRecall(testMovieSet);
         a = mixAlg2.getAccuracy(testMovieSet);
         return "Precision:" + p + " Recall:" + r + " Accuracy:" + a;
+    }
+
+    //==========================Log测试==========================
+    @RequestMapping(value = "/test/logtest", method = RequestMethod.POST)
+    public String Log1(HttpSession httpSession){
+        RSLog rsLog = new RSLog(1, 0.6, 0.7, 0.8, "UCF", System.currentTimeMillis(), 1);
+        logService.addLog(rsLog);
+        return "ok";
     }
 }

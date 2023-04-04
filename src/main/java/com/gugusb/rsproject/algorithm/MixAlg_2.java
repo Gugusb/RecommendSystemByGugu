@@ -59,7 +59,7 @@ public class MixAlg_2 implements BaseAlg{
                 }else{
                     RSUser rsUser = new RSUser();
                     rsUser.setId(userId);
-                    CB_Alg cb_alg = new CB_Alg(rsUser, cb_datas.get(userId).getMovies(), cb_datas.get(userId).getRatings(), cb_datas.get(userId).getAllMovies());
+                    CB_Alg cb_alg = new CB_Alg(rsUser, cb_datas.get(userId).getMovies(), cb_datas.get(userId).getRatings(), cb_datas.get(userId).getAllMovies(), null);
                     fz += cb_alg.getMovieRateWithUser(cb_alg.getGenreListById(i)) * simUsers.get(userId);
                     fm += simUsers.get(userId);
                 }
@@ -76,9 +76,15 @@ public class MixAlg_2 implements BaseAlg{
         //Step1.使用UCF进行基础数据构建
         //Step2.使用CB得到的分数当作计算用户和电影距离时出现空白分数的代替
         //Step2.输出赋分排序后的电影条目
-        this.resultMovies = getTopNSimilarMovieWithCB();
-        if(this.resultMovies.size() > ConstUtil.RECOMMAND_COUNT){
-            this.resultMovies = this.resultMovies.subList(0, ConstUtil.RECOMMAND_COUNT);
+        List<MovieWithRate> temp = getTopNSimilarMovieWithCB();
+        this.resultMovies = new ArrayList<>();
+        for(MovieWithRate movie : temp){
+            if(movie.getRate() >= ConstUtil.RECOMMAND_LINE_M2){
+                this.resultMovies.add(movie);
+            }
+        }
+        if(this.resultMovies.size() < ConstUtil.RECOMMAND_COUNT){
+            this.resultMovies.addAll(temp.subList(this.resultMovies.size(), ConstUtil.RECOMMAND_COUNT));
         }
         return resultMovies;
     }

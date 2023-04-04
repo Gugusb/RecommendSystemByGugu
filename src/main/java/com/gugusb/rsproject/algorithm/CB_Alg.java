@@ -1,5 +1,6 @@
 package com.gugusb.rsproject.algorithm;
 
+import com.gugusb.rsproject.div_strategy.BaseStraPlus;
 import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
@@ -12,6 +13,8 @@ import java.util.*;
 public class CB_Alg implements BaseAlg{
 
     private RSUser user = null;
+    private Long fix_time;
+    private BaseStraPlus divStra;
     private List<MovieWithRate> resultMovies;
     private Map<Integer, List<Integer>> baseMovies;
     private Map<Integer, RSRating> baseRatings;
@@ -27,13 +30,21 @@ public class CB_Alg implements BaseAlg{
      * @param movies  该用户打过分数的电影
      * @param ratings 该用户打过的分数评级
      */
-    public CB_Alg(RSUser user_, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings, Map<Integer, List<Integer>> allMovies){
+    public CB_Alg(RSUser user_, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings, Map<Integer, List<Integer>> allMovies, BaseStraPlus divStra){
         this.user = user_;
         this.baseMovies = movies;
         this.baseRatings = ratings;
         this.allMovies = allMovies;
         this.avgRateList = new ArrayList<>();
         this.genreSimList = new ArrayList<>();
+        this.divStra = divStra;
+        this.fix_time = 0L;
+        for(int i : ratings.keySet()){
+            if(ratings.get(i).getTimestamp() > fix_time){
+                this.fix_time = ratings.get(i).getTimestamp();
+                System.out.println("最终操作时间：" + fix_time);
+            }
+        }
         genreSimList.add(0.0);
         avgRateList.add(0.0);
         for(int i = 1;i <= 19;i ++){
@@ -60,8 +71,11 @@ public class CB_Alg implements BaseAlg{
                 continue;
             }
             double s = 1.0 * (baseRatings.get(i)).getRating();
-            s /= 1.0 * genres.get(0);
+            s *= 1.0 / genres.get(0);
             ///加入兴趣时间衰减
+            double time_rate = Math.pow(ConstUtil.TIME_A, ((1.0 * (fix_time - (baseRatings.get(i)).getTimestamp())) / ConstUtil.INTEREST_CHANGE_TIME));
+            System.out.println("Genreno:" + genre_no + " timescore:" + time_rate + " before:" + s);
+            s *= time_rate;
             sim += s;
         }
         return sim;
@@ -118,17 +132,22 @@ public class CB_Alg implements BaseAlg{
         List<MovieWithRate> list = new ArrayList<>();
         for(int i : allMovies.keySet()){
             //排除已经看过的电影
-            if(baseMovies.containsKey(i)){
-                continue;
+            if(divStra != null){
+
             }
             list.add(new MovieWithRate(i, getMovieRateWithUser(allMovies.get(i))));
         }
         Collections.sort(list);
-        if(list.size() >= ConstUtil.RECOMMAND_COUNT){
-            list = list.subList(0, ConstUtil.RECOMMAND_COUNT);
+        this.resultMovies = new ArrayList<>();
+        for(MovieWithRate movie : list){
+            if(movie.getRate() >= ConstUtil.RECOMMAND_LINE_CB){
+                this.resultMovies.add(movie);
+            }
         }
-        this.resultMovies = list;
-        return list;
+        if(this.resultMovies.size() < ConstUtil.RECOMMAND_COUNT_CB){
+            this.resultMovies.addAll(list.subList(this.resultMovies.size(), ConstUtil.RECOMMAND_COUNT_CB));
+        }
+        return this.resultMovies;
     }
 
     @Override

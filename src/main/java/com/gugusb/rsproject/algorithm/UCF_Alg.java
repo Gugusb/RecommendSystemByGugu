@@ -141,9 +141,15 @@ public class UCF_Alg implements BaseAlg{
 
     @Override
     public List<MovieWithRate> getRecommandMovie() {
-        this.resultMovies = this.getTopNSimilarMovie();
-        if(this.resultMovies.size() > ConstUtil.RECOMMAND_COUNT){
-            this.resultMovies = this.resultMovies.subList(0, ConstUtil.RECOMMAND_COUNT);
+        List<MovieWithRate> temp = this.getTopNSimilarMovie();
+        this.resultMovies = new ArrayList<>();
+        for(MovieWithRate movie : temp){
+            if(movie.getRate() >= ConstUtil.RECOMMAND_LINE_UCF){
+                this.resultMovies.add(movie);
+            }
+        }
+        if(this.resultMovies.size() < ConstUtil.RECOMMAND_COUNT){
+            this.resultMovies.addAll(temp.subList(this.resultMovies.size(), ConstUtil.RECOMMAND_COUNT));
         }
         return this.resultMovies;
     }

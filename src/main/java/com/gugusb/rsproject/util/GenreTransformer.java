@@ -2,21 +2,18 @@ package com.gugusb.rsproject.util;
 
 import com.gugusb.rsproject.entity.MovieWithGenres;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GenreTransformer {
 
     public static List<Integer> TransformGenres(MovieWithGenres movie){
         List<Integer> list = new ArrayList<>();
-        list.add(movie.getGenercount().intValue());
+        list.add(movie.getGenercount().intValue());//0
         list.add(movie.getAction().intValue());
         list.add(movie.getAdventure().intValue());
         list.add(movie.getAnimation().intValue());
         list.add(movie.getChildrens().intValue());
-        list.add(movie.getComedy().intValue());
+        list.add(movie.getComedy().intValue());//5
         list.add(movie.getCrime().intValue());
         list.add(movie.getDocumentary().intValue());
         list.add(movie.getDrama().intValue());
@@ -30,7 +27,7 @@ public class GenreTransformer {
         list.add(movie.getSciFi().intValue());
         list.add(movie.getThriller().intValue());
         list.add(movie.getWar().intValue());
-        list.add(movie.getWestern().intValue());
+        list.add(movie.getWestern().intValue());//19
         return list;
     }
 

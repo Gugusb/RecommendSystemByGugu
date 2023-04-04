@@ -27,8 +27,8 @@ public class AlgorithmService {
     @Autowired
     RSGenresRepository genresRepository;
 
-    public CB_Alg getCFAlg(RSUser user, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings, Map<Integer, List<Integer>> allMovies){
-        CB_Alg cfAlg = new CB_Alg(user, movies, ratings, allMovies);
+    public CB_Alg getCFAlg(RSUser user, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings, Map<Integer, List<Integer>> allMovies, BaseStraPlus divStra){
+        CB_Alg cfAlg = new CB_Alg(user, movies, ratings, allMovies, divStra);
         return cfAlg;
     }
 
