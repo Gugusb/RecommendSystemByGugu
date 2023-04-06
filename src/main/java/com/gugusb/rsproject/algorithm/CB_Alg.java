@@ -132,8 +132,8 @@ public class CB_Alg implements BaseAlg{
         List<MovieWithRate> list = new ArrayList<>();
         for(int i : allMovies.keySet()){
             //排除已经看过的电影
-            if(divStra != null){
-
+            if(baseMovies.containsKey(i)){
+                continue;
             }
             list.add(new MovieWithRate(i, getMovieRateWithUser(allMovies.get(i))));
         }
@@ -145,7 +145,7 @@ public class CB_Alg implements BaseAlg{
             }
         }
         if(this.resultMovies.size() < ConstUtil.RECOMMAND_COUNT_CB){
-            this.resultMovies.addAll(list.subList(this.resultMovies.size(), ConstUtil.RECOMMAND_COUNT_CB));
+            this.resultMovies.addAll(list.subList(this.resultMovies.size(), Math.min(ConstUtil.RECOMMAND_COUNT_CB, list.size())));
         }
         return this.resultMovies;
     }

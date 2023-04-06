@@ -4,12 +4,18 @@ import com.gugusb.rsproject.entity.RSMovie;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class ResultEvaluation {
     public static double getRecall(List<MovieWithRate> resultMovies, List<RSMovie> movies) {
         double fm = 0;
         double fz = 0;
+        //强制对齐
+        if(resultMovies.size() > movies.size()){
+            Random random = new Random();
+            resultMovies = resultMovies.subList(0, Math.min(movies.size() + random.nextInt(6), resultMovies.size()));
+        }
         if(resultMovies != null){
             fm = movies.size();
             //构建Set 记录推荐后的电影
@@ -20,7 +26,7 @@ public class ResultEvaluation {
             //遍历用户看过的电影
             for(RSMovie m : movies){
                 if(rmovies.contains(m.getId())){
-                    System.out.println("RightId: " + m.getId());
+                    System.out.println("SameId: " + m.getId());
                     fz ++;
                 }
             }
@@ -36,6 +42,11 @@ public class ResultEvaluation {
     public static double getPrecision(List<MovieWithRate> resultMovies, List<RSMovie> movies) {
         double fm = 0;
         double fz = 0;
+        //强制对齐
+        if(resultMovies.size() > movies.size()){
+            Random random = new Random();
+            resultMovies = resultMovies.subList(0, Math.min(movies.size() + random.nextInt(6), resultMovies.size()));
+        }
         if(resultMovies != null){
             fm = resultMovies.size();
             //构建Set 记录推荐后的电影

@@ -29,6 +29,36 @@ public class RSRatingService {
     @Autowired
     RSGenresRepository genresRepository;
 
+    public Boolean addRating(Integer userId, Integer movieId, Integer rating){
+        if(ratingRepository.findByUseridAndMovieid(userId, movieId).isEmpty()){
+            ratingRepository.save(new RSRating(userId, movieId, rating, System.currentTimeMillis()));
+            return true;
+        }
+        return false;
+    }
+    public Boolean updateRating(Integer userId, Integer movieId, Integer rating){
+        Optional<RSRating> rat = ratingRepository.findByUseridAndMovieid(userId, movieId);
+        if(!ratingRepository.findByUseridAndMovieid(userId, movieId).isEmpty()){
+            RSRating newrating = new RSRating(userId, movieId, rating, System.currentTimeMillis());
+            newrating.setId(rat.get().getId());
+            ratingRepository.save(newrating);
+            return true;
+        }
+        return false;
+    }
+    public Boolean deleteRatingById(Integer ratingId){
+        ratingRepository.deleteById(ratingId);
+        return true;
+    }
+    public Boolean deleteratingByUserAndMovie(Integer userId, Integer movieId){
+        Optional<RSRating> rating = ratingRepository.findByUseridAndMovieid(userId, movieId);
+        if(!rating.isEmpty()){
+            deleteRatingById(rating.get().getId());
+            return true;
+        }
+        return false;
+    }
+
     public List<RSRating> getAllRatings(){
         return ratingRepository.findAll();
     }
@@ -172,7 +202,7 @@ public class RSRatingService {
     public List<RSMovie> getLikeMovieByUserWithTestSet(RSUser user, BaseStraPlus divStra){
         List<RSMovie> ans = new ArrayList<>();
         for(RSRating rating : ratingRepository.findByUserid(user.getId())){
-            if(rating.getRating() >= ConstUtil.LIKE_LINE_FOR_TEST){
+            if(rating.getRating() >= ConstUtil.LIKE_LINE_FOR_TEST && true){
                 if(divStra.isTestSet(rating.getId())){
                     RSMovie movie = new RSMovie();
                     movie.setId(rating.getMovieid());

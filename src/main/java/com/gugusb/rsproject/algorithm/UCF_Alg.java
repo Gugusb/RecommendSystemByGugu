@@ -148,8 +148,8 @@ public class UCF_Alg implements BaseAlg{
                 this.resultMovies.add(movie);
             }
         }
-        if(this.resultMovies.size() < ConstUtil.RECOMMAND_COUNT){
-            this.resultMovies.addAll(temp.subList(this.resultMovies.size(), ConstUtil.RECOMMAND_COUNT));
+        if(this.resultMovies.size() < ConstUtil.RECOMMAND_COUNT_UCF){
+            this.resultMovies.addAll(temp.subList(this.resultMovies.size(), Math.min(ConstUtil.RECOMMAND_COUNT_UCF, temp.size())));
         }
         return this.resultMovies;
     }

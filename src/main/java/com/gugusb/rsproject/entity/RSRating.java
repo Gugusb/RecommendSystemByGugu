@@ -22,6 +22,17 @@ public class RSRating {
     @Column(name = "timestamp")
     private Long timestamp;
 
+    public RSRating(Integer userid, Integer movieid, Integer rating, Long timestamp) {
+        this.userid = userid;
+        this.movieid = movieid;
+        this.rating = rating;
+        this.timestamp = timestamp;
+    }
+
+    public RSRating() {
+
+    }
+
     public Integer getId() {
         return id;
     }
