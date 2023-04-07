@@ -23,4 +23,33 @@ public class RSMovieService {
     public RSMovie getMovieById(Integer movieId){
         return movieRepository.findById(movieId).get();
     }
+    public Boolean addMovie(RSMovie movie, Integer[] genres){
+        String genreS = "";
+        for(int i = 0;i < 18;i ++){
+            if(i != 0){
+                genreS += "|";
+            }
+            if(genres[i] == 1){
+                genreS += GenreTransformer.getGenreName(i + 1);
+            }
+        }
+        movie.setGenres(genreS);
+        movieRepository.save(movie);
+        return true;
+    }
+    public Boolean deleteMovie(Integer movieid){
+        if(checkExist(movieid)){
+            RSMovie movie = new RSMovie();
+            movie.setId(movieid);
+            movieRepository.delete(movie);
+            return true;
+        }
+        return false;
+    }
+    public Boolean checkExist(Integer movieid){
+        if(movieRepository.findById(movieid).isEmpty()){
+            return false;
+        }
+        return true;
+    }
 }

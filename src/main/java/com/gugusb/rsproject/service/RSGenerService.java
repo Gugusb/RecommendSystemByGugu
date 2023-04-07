@@ -18,6 +18,27 @@ public class RSGenerService {
     @Autowired
     RSGenresRepository genresRepository;
 
+    public Boolean addMovie(Integer[] genres){
+        MovieWithGenres movieWithGenres = GenreTransformer.TransformGenres(genres);
+        genresRepository.save(movieWithGenres);
+        return true;
+    }
+    public Boolean deleteMovie(Integer movieid){
+        if(checkExist(movieid)){
+            MovieWithGenres movie = new MovieWithGenres();
+            movie.setId(movieid);
+            genresRepository.delete(movie);
+            return true;
+        }
+        return false;
+    }
+    public Boolean checkExist(Integer movieid){
+        if(genresRepository.findById(movieid).isEmpty()){
+            return false;
+        }
+        return true;
+    }
+
     public MovieWithGenres getMovieGenresById(Integer movieId){
         return genresRepository.findById(movieId).get();
     }

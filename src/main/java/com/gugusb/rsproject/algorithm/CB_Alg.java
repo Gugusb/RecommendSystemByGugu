@@ -47,7 +47,7 @@ public class CB_Alg implements BaseAlg{
         }
         genreSimList.add(0.0);
         avgRateList.add(0.0);
-        for(int i = 1;i <= 19;i ++){
+        for(int i = 1;i <= 18;i ++){
             genreSimList.add(getGenreSim(i));
             avgRateList.add(getGenreAvgRate(i));
         }
@@ -113,7 +113,7 @@ public class CB_Alg implements BaseAlg{
         double fz = 0.0;
         double fm = 0.0;
 
-        for(int i = 1;i <= 19;i ++){
+        for(int i = 1;i <= 18;i ++){
             if(movieGenre.get(i) == 0){
                 continue;
             }else{
