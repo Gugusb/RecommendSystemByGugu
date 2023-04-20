@@ -216,7 +216,7 @@ public class TestController {
     //==========================Log测试==========================
     @RequestMapping(value = "/test/logtest", method = RequestMethod.POST)
     public String Log1(HttpSession httpSession){
-        RSLog rsLog = new RSLog(1, 0.6, 0.7, 0.8, "UCF", System.currentTimeMillis(), 1);
+        RSLog rsLog = new RSLog(1, 0.6, 0.7, 0.8, 1, System.currentTimeMillis(), 1);
         logService.addLog(rsLog);
         return "ok";
     }

@@ -11,6 +11,8 @@ import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.GenreTransformer;
 import com.gugusb.rsproject.util.MovieWithRate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -28,6 +30,15 @@ public class RSRatingService {
 
     @Autowired
     RSGenresRepository genresRepository;
+
+    public List<RSRating> getRatingByUserId(RSUser user){
+        List<RSRating> ratings = ratingRepository.findByUserid(user.getId());
+        return ratings;
+    }
+
+    public Page<RSRating> getRatingByUserIdPageable(RSUser user, Pageable pageable){
+        return ratingRepository.findRSRatingByUserid(user.getId(),pageable);
+    }
 
     public Boolean addRating(Integer userId, Integer movieId, Integer rating){
         if(ratingRepository.findByUseridAndMovieid(userId, movieId).isEmpty()){

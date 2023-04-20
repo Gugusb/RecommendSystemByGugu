@@ -58,4 +58,12 @@ public class RSUserInfService {
         userRepository.save(user);
         return true;
     }
+
+    public String getUserName(RSUser user){
+        RSUserInf userInf = userInfRepository.findById(user.getId()).get();
+        if(userInf == null){
+            return "";
+        }
+        return  userInf.getName();
+    }
 }

@@ -16,16 +16,16 @@ public class RSLogTeam {
     @Column(name = "createtime")
     private Long time;
 
-    @Column(name = "userid")
-    private Integer userid;
+    @Column(name = "usercount")
+    private Integer usercount;
 
     @Column(name = "algcount")
-    private Integer count;
+    private Integer algcount;
 
-    public RSLogTeam(Long time, Integer userid, Integer count) {
+    public RSLogTeam(Long time, Integer usercount, Integer algcount) {
         this.time = time;
-        this.userid = userid;
-        this.count = count;
+        this.usercount = usercount;
+        this.algcount = algcount;
     }
 
     public RSLogTeam() {
@@ -48,20 +48,20 @@ public class RSLogTeam {
         this.time = time;
     }
 
-    public Integer getUserid() {
-        return userid;
+    public Integer getUsercount() {
+        return usercount;
     }
 
-    public void setUserid(Integer userid) {
-        this.userid = userid;
+    public void setUsercount(Integer usercount) {
+        this.usercount= usercount;
     }
 
-    public Integer getCount() {
-        return count;
+    public Integer getAlgCount() {
+        return algcount;
     }
 
-    public void setCount(Integer count) {
-        this.count = count;
+    public void setAlgCount(Integer count) {
+        this.algcount = count;
     }
 
     public Integer getTeamno() {

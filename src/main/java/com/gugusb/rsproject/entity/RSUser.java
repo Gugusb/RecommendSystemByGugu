@@ -18,7 +18,7 @@ public class RSUser {
     @Column(name = "age")
     private Integer age;
 
-    @Column(name = "occupation")
+    @Column(name = "occopation")
     private Integer occupation;
 
     @Size(max = 15)

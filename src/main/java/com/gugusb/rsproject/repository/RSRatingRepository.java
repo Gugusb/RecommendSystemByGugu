@@ -1,6 +1,8 @@
 package com.gugusb.rsproject.repository;
 
 import com.gugusb.rsproject.entity.RSRating;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +17,8 @@ public interface RSRatingRepository extends JpaRepository<RSRating, Integer> {
     List<RSRating> findByMovieid(Integer movieid);
 
     List<RSRating> findByUserid(Integer userid);
+
+    Page<RSRating> findRSRatingByUserid(Integer userId, Pageable pageable);
 
     List<RSRating> findByUseridOrderByMovieid(Integer userid);
 

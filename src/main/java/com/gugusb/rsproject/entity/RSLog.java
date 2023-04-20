@@ -27,7 +27,7 @@ public class RSLog {
 
     @Size(max = 20)
     @Column(name = "logalgtype")
-    private String algtype;
+    private Integer algtype;
 
     @Column(name = "logtimestamp")
     private Long time;
@@ -39,7 +39,7 @@ public class RSLog {
 
     }
 
-    public RSLog(Integer userid, Double recall, Double precision, Double accuracy, String algtype, Long time, Integer teamid) {
+    public RSLog(Integer userid, Double recall, Double precision, Double accuracy, Integer algtype, Long time, Integer teamid) {
         this.userid = userid;
         this.recall = recall;
         this.precision = precision;
@@ -69,7 +69,7 @@ public class RSLog {
         return accuracy;
     }
 
-    public String getAlgtype() {
+    public Integer getAlgtype() {
         return algtype;
     }
 
@@ -97,7 +97,7 @@ public class RSLog {
         this.accuracy = accuracy;
     }
 
-    public void setAlgtype(String algtype) {
+    public void setAlgtype(Integer algtype) {
         this.algtype = algtype;
     }
 

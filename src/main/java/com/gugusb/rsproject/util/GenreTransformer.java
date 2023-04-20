@@ -33,7 +33,7 @@ public class GenreTransformer {
         list.add(movie.getSciFi().intValue());
         list.add(movie.getThriller().intValue());
         list.add(movie.getWar().intValue());
-        list.add(movie.getWestern().intValue());//18
+        list.add(movie.getWestern().intValue());//共计18个种类
         return list;
     }
     public static MovieWithGenres TransformGenres(Integer[] genres){
