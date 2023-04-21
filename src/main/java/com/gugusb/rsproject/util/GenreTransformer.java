@@ -36,6 +36,7 @@ public class GenreTransformer {
         list.add(movie.getWestern().intValue());//共计18个种类
         return list;
     }
+
     public static MovieWithGenres TransformGenres(Integer[] genres){
         MovieWithGenres movieWithGenres = new MovieWithGenres();
         Integer count = 0;
@@ -63,6 +64,37 @@ public class GenreTransformer {
         movieWithGenres.setThriller(genres[15].byteValue());
         movieWithGenres.setWar(genres[16].byteValue());
         movieWithGenres.setWestern(genres[17].byteValue());
+
+        return movieWithGenres;
+    }
+
+    public static MovieWithGenres TransformGenres(List<Integer> genres){
+        MovieWithGenres movieWithGenres = new MovieWithGenres();
+        Integer count = 0;
+        for(int i = 0;i < 18;i ++){
+            if(genres.get(i) == 0){
+                count ++;
+            }
+        }
+        movieWithGenres.setGenercount(count.byteValue());
+        movieWithGenres.setAction(genres.get(0).byteValue());
+        movieWithGenres.setAdventure(genres.get(1).byteValue());
+        movieWithGenres.setAnimation(genres.get(2).byteValue());
+        movieWithGenres.setChildrens(genres.get(3).byteValue());
+        movieWithGenres.setComedy(genres.get(4).byteValue());
+        movieWithGenres.setCrime(genres.get(5).byteValue());
+        movieWithGenres.setDocumentary(genres.get(6).byteValue());
+        movieWithGenres.setDrama(genres.get(7).byteValue());
+        movieWithGenres.setFantasy(genres.get(8).byteValue());
+        movieWithGenres.setFilmNoir(genres.get(9).byteValue());
+        movieWithGenres.setHorror(genres.get(10).byteValue());
+        movieWithGenres.setMusical(genres.get(11).byteValue());
+        movieWithGenres.setMystery(genres.get(12).byteValue());
+        movieWithGenres.setRomance(genres.get(13).byteValue());
+        movieWithGenres.setSciFi(genres.get(14).byteValue());
+        movieWithGenres.setThriller(genres.get(15).byteValue());
+        movieWithGenres.setWar(genres.get(16).byteValue());
+        movieWithGenres.setWestern(genres.get(17).byteValue());
 
         return movieWithGenres;
     }

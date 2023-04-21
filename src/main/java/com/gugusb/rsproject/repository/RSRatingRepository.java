@@ -14,11 +14,17 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface RSRatingRepository extends JpaRepository<RSRating, Integer> {
+    void deleteByMovieid(Integer movieid);
+
+    Page<RSRating> findAll(Pageable pageable);
+
     List<RSRating> findByMovieid(Integer movieid);
 
     List<RSRating> findByUserid(Integer userid);
 
     Page<RSRating> findRSRatingByUserid(Integer userId, Pageable pageable);
+
+    Page<RSRating> findRSRatingByMovieid(Integer movieId, Pageable pageable);
 
     List<RSRating> findByUseridOrderByMovieid(Integer userid);
 

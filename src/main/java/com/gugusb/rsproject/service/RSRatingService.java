@@ -31,6 +31,40 @@ public class RSRatingService {
     @Autowired
     RSGenresRepository genresRepository;
 
+    public Boolean deleteRating(Integer ratingId){
+        if(ratingRepository.existsById(ratingId)){
+            ratingRepository.deleteById(ratingId);
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public Page<RSRating> getAllRatings(Pageable pageable){
+        return ratingRepository.findAll(pageable);
+    }
+
+    public Page<RSRating> getRatingsByUserId(Integer userId, Pageable pageable){
+        return ratingRepository.findRSRatingByUserid(userId, pageable);
+    }
+
+    public Page<RSRating> getRatingsByMovieId(Integer movieId, Pageable pageable){
+        return ratingRepository.findRSRatingByMovieid(movieId, pageable);
+    }
+
+    public List<Integer> getScoreRatingByMovieId(Integer movieId){
+        List<Integer> res = new Stack<>();
+        for(int i = 0;i < 5;i ++){
+            res.add(0);
+        }
+        List<RSRating> ratings = ratingRepository.findByMovieid(movieId);
+        for(RSRating rating : ratings){
+            int index = 5 - rating.getRating();
+            res.set(index, res.get(index) + 1);
+        }
+        return res;
+    }
+
     public List<RSRating> getRatingByUserId(RSUser user){
         List<RSRating> ratings = ratingRepository.findByUserid(user.getId());
         return ratings;

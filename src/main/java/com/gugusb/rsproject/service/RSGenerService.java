@@ -6,17 +6,84 @@ import com.gugusb.rsproject.entity.RSUser;
 import com.gugusb.rsproject.repository.RSGenresRepository;
 import com.gugusb.rsproject.util.GenreTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class RSGenerService {
     @Autowired
     RSGenresRepository genresRepository;
+
+    public Boolean updateMovieInf(Integer movieId, List<Integer> genres){
+        if(genresRepository.existsById(movieId)){
+            List<Integer> list = new Stack<>();
+            for(int i = 0;i < 18;i ++){
+                list.add(0);
+            }
+            for(int i: genres){
+                list.set(i - 1, 1);
+            }
+            MovieWithGenres mwr = GenreTransformer.TransformGenres(list);
+            mwr.setId(movieId);
+            genresRepository.save(mwr);
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public Page<MovieWithGenres> searchMovieByTagsOrderById(Pageable pageable, List<Integer> tags, Boolean isAsc){
+        if(isAsc){
+            return genresRepository.findByActionInAndAdventureInAndAnimationInAndChildrensInAndComedyInAndCrimeInAndDocumentaryInAndDramaInAndFantasyInAndFilmNoirInAndHorrorInAndMusicalInAndMysteryInAndRomanceInAndSciFiInAndThrillerInAndWarInAndWesternInOrderByIdAsc(
+                    (tags.get(0) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(1) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(2) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(3) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(4) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(5) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(6) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(7) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(8) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(9) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(10) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(11) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(12) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(13) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(14) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(15) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(16) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(17) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    pageable
+            );
+        }else{
+            return genresRepository.findByActionInAndAdventureInAndAnimationInAndChildrensInAndComedyInAndCrimeInAndDocumentaryInAndDramaInAndFantasyInAndFilmNoirInAndHorrorInAndMusicalInAndMysteryInAndRomanceInAndSciFiInAndThrillerInAndWarInAndWesternInOrderByIdDesc(
+                    (tags.get(0) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(1) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(2) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(3) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(4) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(5) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(6) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(7) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(8) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(9) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(10) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(11) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(12) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(13) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(14) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(15) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(16) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    (tags.get(17) > 0 ? List.of(new Byte[]{(byte) 1}):List.of(new Byte[]{(byte) 0, (byte) 1})),
+                    pageable
+            );
+        }
+
+
+    }
 
     public Boolean addMovie(Integer[] genres){
         MovieWithGenres movieWithGenres = GenreTransformer.TransformGenres(genres);
@@ -40,7 +107,12 @@ public class RSGenerService {
     }
 
     public MovieWithGenres getMovieGenresById(Integer movieId){
-        return genresRepository.findById(movieId).get();
+        if(genresRepository.existsById(movieId)){
+            return genresRepository.findById(movieId).get();
+        }else{
+            return null;
+        }
+
     }
 
     public Map<Integer, List<Integer>> getAllMovieMap(){
@@ -50,6 +122,17 @@ public class RSGenerService {
             map.put(movieId, GenreTransformer.TransformGenres(mwg));
         }
         return map;
+    }
+
+    public List<Integer> getMovieMap(MovieWithGenres mwr){
+        List<Integer> list = GenreTransformer.TransformGenres(mwr).subList(1, 19);
+        List<Integer> res = new Stack<>();
+        for(int i = 0;i < list.size();i ++){
+            if(list.get(i) != 0){
+                res.add(i + 1);
+            }
+        }
+        return res;
     }
 
     public List<MovieWithGenres> getAllMovieList(){
