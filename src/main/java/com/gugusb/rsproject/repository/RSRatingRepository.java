@@ -22,6 +22,8 @@ public interface RSRatingRepository extends JpaRepository<RSRating, Integer> {
 
     List<RSRating> findByUserid(Integer userid);
 
+    List<RSRating> findByRatingGreaterThanOrderByUseridAsc(Integer rating);
+
     Page<RSRating> findRSRatingByUserid(Integer userId, Pageable pageable);
 
     Page<RSRating> findRSRatingByMovieid(Integer movieId, Pageable pageable);

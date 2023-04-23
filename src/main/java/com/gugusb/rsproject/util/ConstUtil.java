@@ -12,7 +12,7 @@ public class ConstUtil {
     public static final int UCF_PER_MOVIE_TOPN = 5;
     public static final double UCF_AVG_MOVIE_RATE = 2.5;
     public static int MOVIE_COUNT = 3952;
-    public static int USER_COUNT = 6040;
+    public static int USER_COUNT = 6040 + 100;
     public static int LIKE_LINE = 4;
     public static int LIKE_LINE_FOR_TEST = 3;
     public static double RECOMMAND_LINE_UCF = 4.0;

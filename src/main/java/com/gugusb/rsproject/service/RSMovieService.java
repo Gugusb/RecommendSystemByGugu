@@ -7,6 +7,7 @@ import com.gugusb.rsproject.entity.RSUser;
 import com.gugusb.rsproject.repository.RSMovieRepository;
 import com.gugusb.rsproject.repository.RSRatingRepository;
 import com.gugusb.rsproject.util.GenreTransformer;
+import com.gugusb.rsproject.util.MovieWithRate;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -65,6 +66,14 @@ public class RSMovieService {
         List<String> res = new Stack<>();
         for(RSRating rating : ratings){
             res.add(movieRepository.findById(rating.getMovieid()).get().getTitle());
+        }
+        return res;
+    }
+
+    public List<String> getNamesFromMWR(List<MovieWithRate> list){
+        List<String> res = new Stack<>();
+        for(MovieWithRate mwr : list){
+            res.add(movieRepository.findById(mwr.getMovieId()).get().getTitle());
         }
         return res;
     }

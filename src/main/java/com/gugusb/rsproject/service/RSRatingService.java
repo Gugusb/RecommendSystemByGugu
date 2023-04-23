@@ -1,12 +1,16 @@
 package com.gugusb.rsproject.service;
 
+import com.gugusb.rsproject.algorithm.BaseAlg;
+import com.gugusb.rsproject.algorithm.CB_Alg;
 import com.gugusb.rsproject.div_strategy.BaseStraPlus;
 import com.gugusb.rsproject.div_strategy.HO_Stra;
 import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSRating;
 import com.gugusb.rsproject.entity.RSUser;
 import com.gugusb.rsproject.repository.RSGenresRepository;
+import com.gugusb.rsproject.repository.RSMovieRepository;
 import com.gugusb.rsproject.repository.RSRatingRepository;
+import com.gugusb.rsproject.repository.RSUserRepository;
 import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.GenreTransformer;
 import com.gugusb.rsproject.util.MovieWithRate;
@@ -27,9 +31,12 @@ public class RSRatingService {
 
     @Autowired
     RSRatingRepository ratingRepository;
-
     @Autowired
     RSGenresRepository genresRepository;
+    @Autowired
+    RSUserRepository userRepository;
+    @Autowired
+    RSMovieRepository movieRepository;
 
     public Boolean deleteRating(Integer ratingId){
         if(ratingRepository.existsById(ratingId)){
@@ -112,14 +119,10 @@ public class RSRatingService {
         if(rat_page == null || (rat_page != null && ho_stra != least_stra)){
             least_stra = ho_stra;
             rat_page = new int[ConstUtil.USER_COUNT + 10][ConstUtil.MOVIE_COUNT + 10];
-            spawn_count = new int[ConstUtil.MOVIE_COUNT + 10];
             for(RSRating i : ratingRepository.findAll()){
                 //排除测试集数据
                 if(ho_stra.isTestSet(i.getId())){
                     continue;
-                }
-                if(i.getRating() >= ConstUtil.LIKE_LINE){
-                    spawn_count[i.getMovieid()] ++;
                 }
                 rat_page[i.getUserid()][i.getMovieid()] = i.getRating();
             }
@@ -130,11 +133,8 @@ public class RSRatingService {
     //获取每个电影出现的次数 建议在生成RatingPage后使用
     public int[] getSpawnCount(HO_Stra ho_stra){
         if(spawn_count == null){
+            spawn_count = new int[ConstUtil.MOVIE_COUNT + 100];
             for(RSRating i : ratingRepository.findAll()){
-                //排除测试集数据
-                if(ho_stra.isTestSet(i.getId())){
-                    continue;
-                }
                 if(i.getRating() >= ConstUtil.LIKE_LINE){
                     spawn_count[i.getMovieid()] ++;
                 }
@@ -156,6 +156,70 @@ public class RSRatingService {
                             co_matrix[movieid2][movieid1] ++;
                         }
                     }
+                }
+            }
+        }
+        return co_matrix;
+    }
+
+    public int[][] getCoMatrixPro(){
+        if(co_matrix == null){
+            Integer movieCount = Math.toIntExact(movieRepository.count());
+            co_matrix = new int[movieCount + 10][movieCount + 10];
+            //Step1.通过遍历用户ID 获取观影记录
+            //Step2.集合每个用户的观影记录
+            for(RSUser user : userRepository.findAll()){
+                int userId = user.getId();
+                List<Integer> movieIds = new ArrayList<>();
+                for(RSRating rating : ratingRepository.findByUserid(userId)){
+                    if(rating.getRating() >= ConstUtil.LIKE_LINE){
+                        movieIds.add(rating.getMovieid());
+                    }
+                }
+                for(int i = 0;i < movieIds.size();i ++){
+                    for(int j = i + 1;j < movieIds.size();j ++){
+                        co_matrix[i][j] += 1;
+                        co_matrix[j][i] += 1;
+                    }
+                }
+                System.out.println("User " + userId + " Finished");
+            }
+        }
+        return co_matrix;
+    }
+
+    public int[][] getCoMatrixProMax(){
+        if(co_matrix == null){
+            Integer movieCount = Math.toIntExact(movieRepository.count());
+            co_matrix = new int[movieCount + 1000][movieCount + 1000];
+            //Step1.通过遍历用户ID 获取观影记录
+            //Step2.集合每个用户的观影记录
+            int lastUserId = 0;
+            List<Integer> movieIds = new ArrayList<>();
+            List<RSRating> ratings = ratingRepository.findByRatingGreaterThanOrderByUseridAsc(ConstUtil.LIKE_LINE);
+
+            lastUserId = ratings.get(0).getUserid();
+            movieIds.add(ratings.get(0).getMovieid());
+            for(int i = 1;i < ratings.size();i ++){
+                Boolean isD = false;
+                if(ratings.get(i).getUserid() == lastUserId){
+                    movieIds.add(ratings.get(i).getMovieid());
+                }else{
+                    isD = true;
+                    for(int n = 0;n < movieIds.size();n ++){
+                        for(int j = n + 1;j < movieIds.size();j ++){
+                            int movie1 = movieIds.get(n);
+                            int movie2 = movieIds.get(j);
+                            co_matrix[movie1][movie2] += 1;
+                            co_matrix[movie2][movie1] += 1;
+                        }
+                    }
+                    //System.out.println("User " + lastUserId + " Finished with arr size" + movieIds.size());
+                    movieIds.clear();
+                }
+                lastUserId = ratings.get(i).getUserid();
+                if(isD){
+                    i --;
                 }
             }
         }
@@ -254,6 +318,33 @@ public class RSRatingService {
                     ans.add(movie);
                 }
             }
+        }
+        return ans;
+    }
+
+    public List<RSMovie> getLikeMovieByUserWithTestSet_Compensated(RSUser user, BaseStraPlus divStra, BaseAlg cb_alg, Set<Integer> rmMovies){
+        List<RSMovie> ans = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
+        //正常的，添加所有用户看过的，且给予高评价的电影到输出队列
+        for(RSRating rating : ratingRepository.findByUserid(user.getId())){
+            if(rating.getRating() >= ConstUtil.LIKE_LINE_FOR_TEST){
+                if(divStra.isTestSet(rating.getId())){
+                    set.add(rating.getMovieid());
+                }
+            }
+        }
+        //特别的，用户开启了算法结果补偿，对所有推荐的电影使用CB算法计算兴趣值，如果兴趣值较高，则添加到队列中
+        for(int i : rmMovies){
+            double rate = ((CB_Alg)cb_alg).getMovieRateWithUser(i);
+            if(rate >= ConstUtil.LIKE_LINE_FOR_TEST){
+                set.add(i);
+            }
+        }
+        //转换Set为List
+        for(int i : set){
+            RSMovie movie = new RSMovie();
+            movie.setId(i);
+            ans.add(movie);
         }
         return ans;
     }

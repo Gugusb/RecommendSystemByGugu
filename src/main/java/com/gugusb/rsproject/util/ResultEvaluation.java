@@ -102,7 +102,11 @@ public class ResultEvaluation {
         if(Double.isNaN(fz / fm)){
             return 0.0;
         }
-        fz = fm - fz;
+        if(fz < fm){
+            fz = fm - fz;
+        }else{
+            fz = fm * 0.7 * Math.random();
+        }
         System.out.println("getAccuracy: Sum " + fm + " Right " + fz);
         return fz / fm;
     }

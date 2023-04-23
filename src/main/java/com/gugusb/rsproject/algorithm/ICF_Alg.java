@@ -4,6 +4,7 @@ import com.gugusb.rsproject.entity.RSMovie;
 import com.gugusb.rsproject.entity.RSUser;
 import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.MovieWithRate;
+import com.gugusb.rsproject.util.ResultEvaluation;
 
 import java.util.*;
 
@@ -14,6 +15,7 @@ public class ICF_Alg implements BaseAlg{
     private int[][] co_matrix;
     private int[] spawn_count;
     private Set<Integer> like_movies;
+    List<MovieWithRate> resultMovies;
 
     //STEP1.构建共现矩阵
     public ICF_Alg(int[][] rating_page, int[][] co_matrix, int[] spawn_count, RSUser user){
@@ -36,7 +38,7 @@ public class ICF_Alg implements BaseAlg{
         //Step1.找到用户一定喜欢的电影表
         for(Integer i : this.getLikeMovies()){
             //Step2.遍历共现矩阵 找到用户喜欢的电影有关联的电影集合
-            for(int j = 1;j < ConstUtil.MOVIE_COUNT;i ++){
+            for(int j = 1;j < ConstUtil.MOVIE_COUNT;j ++){
                 if(co_matrix[i][j] > 0){
                     integerList.add(j);
                 }
@@ -89,21 +91,21 @@ public class ICF_Alg implements BaseAlg{
         }
         //Step3.对所有电影进行评分排序
         Collections.sort(movieWithRateList);
-        return movieWithRateList;
+        return resultMovies = movieWithRateList.subList(0, Math.min(movieWithRateList.size(), 20));
     }
 
     @Override
     public double getRecall(List<RSMovie> movies) {
-        return 0;
+        return ResultEvaluation.getRecall(resultMovies, movies);
     }
 
     @Override
     public double getPrecision(List<RSMovie> movies) {
-        return 0;
+        return ResultEvaluation.getPrecision(resultMovies, movies);
     }
 
     @Override
     public double getAccuracy(List<RSMovie> movies) {
-        return 0;
+        return ResultEvaluation.getAccuracy(resultMovies, movies);
     }
 }

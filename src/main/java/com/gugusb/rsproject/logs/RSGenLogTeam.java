@@ -18,7 +18,7 @@ public class RSGenLogTeam {
         //Create Nomber
         Calendar calendar = Calendar.getInstance();
         time = calendar.getTimeInMillis();
-        no = (int)time;
+        no = Math.abs((int)time);
         users = new HashSet<>();
     }
     public RSGenLogTeam(List<RSGenLog> logs){
@@ -57,12 +57,10 @@ public class RSGenLogTeam {
                 rsLog.setAlgtype(2);
             }else if(log.getAlg() instanceof CB_Alg) {
                 rsLog.setAlgtype(1);
-            }else if(log.getAlg() instanceof MixAlg_1) {
+            }else if(log.getAlg() instanceof ICF_Alg) {
                 rsLog.setAlgtype(3);
             }else if(log.getAlg() instanceof MixAlg_2) {
                 rsLog.setAlgtype(4);
-            }else if(log.getAlg() instanceof MixAlg_3) {
-                rsLog.setAlgtype(5);
             }
             rsLog.setTime(log.time.getTime());
             rsLog.setTeamid(no);

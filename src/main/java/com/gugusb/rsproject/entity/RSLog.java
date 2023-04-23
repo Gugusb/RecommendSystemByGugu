@@ -25,7 +25,6 @@ public class RSLog {
     @Column(name = "logaccuracy")
     private Double accuracy;
 
-    @Size(max = 20)
     @Column(name = "logalgtype")
     private Integer algtype;
 

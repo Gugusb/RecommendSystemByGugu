@@ -1,6 +1,7 @@
 package com.gugusb.rsproject.controller;
 
 import com.gugusb.rsproject.algorithm.*;
+import com.gugusb.rsproject.common.ServerResponse;
 import com.gugusb.rsproject.div_strategy.HO_Stra;
 import com.gugusb.rsproject.entity.RSLog;
 import com.gugusb.rsproject.entity.RSMovie;
@@ -63,14 +64,6 @@ public class TestController {
 
         //划分训练集和测试集
         HO_Stra ho_stra = one_stra;
-
-        /*
-        划分训练集和测试集的新思想
-        创建一个数据划分对象，该对象每次实例化时会生成一个较大的随机数种子Seed
-        当需要判断一个RatingId属于测试集或训练集时，将RatingId和随机数种子Seed相加
-        之后将加和的数字作为最终种子计算出0-1的随机数，取该随机数的最后几位加以位权得到新的0-1的最终数据
-        通过该数和比例的大小关系判断是否属于测试集或者训练集
-        */
 
         //获取算法对象
         //注入训练集
@@ -136,10 +129,19 @@ public class TestController {
         RSUser user = new RSUser();
         user.setId(userid);
         HO_Stra ho_stra = new HO_Stra();
-        icf_alg = algorithmService.getICFAlg(ratingService.getAllRatingPage(ho_stra), ratingService.getCoMatrix(ho_stra), ratingService.getSpawnCount(ho_stra), user);
+        icf_alg = algorithmService.getICFAlg(ratingService.getAllRatingPage(ho_stra), ratingService.getCoMatrixProMax(), ratingService.getSpawnCount(ho_stra), user);
+        for(MovieWithRate movie : icf_alg.getRecommandMovie()){
+            System.out.println("" + movie.getMovieId() + " " + movie.getRate());
+        }
         return "ICF finish init";
     }
 
+    @RequestMapping(value = "/test/com", method = RequestMethod.POST)
+    public ServerResponse testCoM(HttpSession httpSession,
+                                  Integer id1,
+                                  Integer id2){
+        return ServerResponse.createRespBySuccess(ratingService.getCoMatrixProMax()[id1][id2]);
+    }
     //==========================Mix1测试==========================
     //测试一下生成限定电影集合的共现矩阵的运行速度
     @RequestMapping(value = "/test/cmt", method = RequestMethod.POST)

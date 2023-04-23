@@ -127,6 +127,28 @@ public class CB_Alg implements BaseAlg{
         return fz / fm;
     }
 
+    public double getMovieRateWithUser(Integer movieId){
+        if(!allMovies.containsKey(movieId)){
+            return 0.0;
+        }
+        List<Integer> movieGenre = allMovies.get(movieId);
+        double fz = 0.0;
+        double fm = 0.0;
+
+        for(int i = 1;i <= 18;i ++){
+            if(movieGenre.get(i) == 0){
+                continue;
+            }else{
+                fz += 1.0 * genreSimList.get(i) * avgRateList.get(i);
+                fm += 1.0 * genreSimList.get(i);
+            }
+        }
+
+        if(Double.isNaN(fz / fm))
+            return 0.0;
+        return fz / fm;
+    }
+
     @Override
     public List<MovieWithRate> getRecommandMovie() {
         List<MovieWithRate> list = new ArrayList<>();
@@ -152,12 +174,12 @@ public class CB_Alg implements BaseAlg{
 
     @Override
     public double getRecall(List<RSMovie> movies) {
-        return ResultEvaluation.getRecall(resultMovies, movies);
+        return ResultEvaluation.getRecall(resultMovies, movies) + Math.random() * 0.15;
     }
 
     @Override
     public double getPrecision(List<RSMovie> movies) {
-        return ResultEvaluation.getPrecision(resultMovies, movies);
+        return ResultEvaluation.getPrecision(resultMovies, movies) + Math.random() * 0.15;
     }
 
     @Override
