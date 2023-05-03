@@ -59,11 +59,23 @@ public class RatingController {
     }
 
     @RequestMapping(value = "/delete_rating", method = RequestMethod.POST)
-    public ServerResponse<String> deleteDating(HttpSession httpSession,
+    public ServerResponse<String> deleteRating(HttpSession httpSession,
                                              @RequestParam Integer ratingId){
         if(ratingService.deleteRating(ratingId)){
             return ServerResponse.createRespBySuccess("OK");
         }
         return ServerResponse.createByErrorMessage("No");
+    }
+
+    @RequestMapping(value = "/check_rating", method = RequestMethod.POST)
+    public ServerResponse checkRating(HttpSession httpSession,
+                                               @RequestParam Integer movieId){
+       Object userId = httpSession.getAttribute("userId");
+       if(userId == null){
+           return ServerResponse.createRespBySuccess(-2);
+       }else{
+           Integer rat = ratingService.getRatingByTwoId((Integer) userId, movieId);
+           return ServerResponse.createRespBySuccess(rat);
+       }
     }
 }

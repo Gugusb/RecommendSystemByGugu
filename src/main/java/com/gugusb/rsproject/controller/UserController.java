@@ -41,6 +41,23 @@ public class UserController {
         return ServerResponse.createByErrorMessage("Wrong Password Or Unexist User");
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public ServerResponse userLogout(HttpSession httpSession){
+        if(httpSession.getAttribute("userId") != null){
+            httpSession.removeAttribute("userId");
+            ServerResponse.createRespBySuccess();
+        }
+        return ServerResponse.createByErrorMessage("Unlogin");
+    }
+
+    @RequestMapping(value = "/check_state", method = RequestMethod.POST)
+    public ServerResponse checkUserLoginState(HttpSession httpSession){
+        if(httpSession.getAttribute("userId") != null){
+            return ServerResponse.createRespBySuccess(httpSession.getAttribute("userId"));
+        }
+        return ServerResponse.createByErrorMessage("Wrong Password Or Unexist User");
+    }
+
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ServerResponse userRegister(HttpSession httpSession, @RequestBody Map<String, Object> map){
         RSUserInf userInf = new RSUserInf();
@@ -73,10 +90,11 @@ public class UserController {
         return ServerResponse.createByErrorMessage("评分失败");
     }
     @RequestMapping(value = "/change_rating", method = RequestMethod.POST)
-    public ServerResponse userChangeRating(HttpSession httpSession, Integer userid, Integer movieid, Integer rating){
-        if(userid == null){
-            userid = (Integer) httpSession.getAttribute("userId");
-        }
+    public ServerResponse userChangeRating(HttpSession httpSession,
+                                           @RequestParam Integer movieid,
+                                           @RequestParam Integer rating){
+
+        Integer userid = (Integer) httpSession.getAttribute("userId");
         if(ratingService.updateRating(userid, movieid, rating)){
             return ServerResponse.createRespBySuccess("Rating succeed");
         }

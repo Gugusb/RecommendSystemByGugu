@@ -38,6 +38,14 @@ public class RSRatingService {
     @Autowired
     RSMovieRepository movieRepository;
 
+    public Integer getRatingByTwoId(Integer userId, Integer movieId){
+        if(ratingRepository.findByUseridAndMovieid(userId, movieId).isEmpty()){
+            return -1;
+        }else{
+            return ratingRepository.findByUseridAndMovieid(userId, movieId).get().getRating();
+        }
+    }
+
     public Boolean deleteRating(Integer ratingId){
         if(ratingRepository.existsById(ratingId)){
             ratingRepository.deleteById(ratingId);
@@ -95,8 +103,11 @@ public class RSRatingService {
             newrating.setId(rat.get().getId());
             ratingRepository.save(newrating);
             return true;
+        }else{
+            RSRating newrating = new RSRating(userId, movieId, rating, System.currentTimeMillis());
+            ratingRepository.save(newrating);
+            return true;
         }
-        return false;
     }
     public Boolean deleteRatingById(Integer ratingId){
         ratingRepository.deleteById(ratingId);
