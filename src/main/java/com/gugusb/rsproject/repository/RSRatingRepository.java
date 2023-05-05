@@ -16,6 +16,8 @@ import java.util.Set;
 public interface RSRatingRepository extends JpaRepository<RSRating, Integer> {
     void deleteByMovieid(Integer movieid);
 
+    long countByUserid(Integer userid);
+
     Page<RSRating> findAll(Pageable pageable);
 
     List<RSRating> findByMovieid(Integer movieid);

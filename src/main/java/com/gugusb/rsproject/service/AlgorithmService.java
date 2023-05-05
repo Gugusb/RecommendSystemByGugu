@@ -12,6 +12,7 @@ import com.gugusb.rsproject.util.CBBaseData;
 import com.gugusb.rsproject.util.ConstUtil;
 import com.gugusb.rsproject.util.GenreTransformer;
 import com.gugusb.rsproject.util.MovieWithRate;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class AlgorithmService {
     RSRatingRepository ratingRepository;
     @Autowired
     RSGenresRepository genresRepository;
+
+    Map<Integer, Set<Integer>> userToMovie;
+    Map<Integer, Set<Integer>> movieToUser;
 
     public CB_Alg getCFAlg(RSUser user, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings, Map<Integer, List<Integer>> allMovies, BaseStraPlus divStra){
         CB_Alg cfAlg = new CB_Alg(user, movies, ratings, allMovies, divStra);
@@ -155,5 +159,99 @@ public class AlgorithmService {
         return map;
     }
 
+    //构建从用户到电影 从电影到用户的字典
+    private void InitMaps(){
+        userToMovie = new HashMap<>();
+        movieToUser = new HashMap<>();
+        for(RSRating rating : ratingRepository.findAll()){
+            int userId = rating.getUserid();
+            int movieId = rating.getMovieid();
+            if(userToMovie.containsKey(userId)){
+                userToMovie.get(userId).add(movieId);
+            }else{
+                Set<Integer> newSet = new HashSet<>();
+                newSet.add(movieId);
+                userToMovie.put(userId, newSet);
+            }
 
+            if(movieToUser.containsKey(movieId)){
+                movieToUser.get(movieId).add(userId);
+            }else{
+                Set<Integer> newSet = new HashSet<>();
+                newSet.add(userId);
+                movieToUser.put(movieId, newSet);
+            }
+        }
+    }
+    public Map<Integer, Set<Integer>> getUserToMovie(){
+        if(userToMovie == null){
+            InitMaps();
+        }
+        return userToMovie;
+    }
+    public Map<Integer, Set<Integer>> getMovieToUser(){
+        if(movieToUser == null){
+            InitMaps();
+        }
+        return movieToUser;
+    }
+
+    //给所有的用户赋初始权
+    public double[] empowerUsers(){
+        long ttime = ratingRepository.count();
+        double[] utime = new double[ConstUtil.USER_COUNT + 100];
+        for(int i : getUserToMovie().keySet()){
+            utime[i] = 1.0 * getUserToMovie().get(i).size() / ttime;
+        }
+        return utime;
+    }
+    //给所有的电影赋初始权
+    public double[] empowerMovies(){
+        long ttime = ratingRepository.count();
+        double[] mtime = new double[ConstUtil.MOVIE_COUNT + 100];
+        for(int i : getMovieToUser().keySet()){
+            mtime[i] = 1.0 * getMovieToUser().get(i).size() / ttime;
+        }
+        return mtime;
+    }
+
+    //获取初始化（经过PageRank）的电影权值
+    public double[] getInitMoviePower(){
+
+        double[] upowers = empowerUsers();
+        double[] mpowers = empowerMovies();
+        double m_sum = 0.0;
+
+        boolean swc = true;
+        int counter = 1;
+        //激情迭代！
+        while(swc){
+            System.out.println("Time:" + counter);
+            m_sum = 0.0;
+            //迭代用户权值
+            for(int i : getMovieToUser().keySet()){
+                for(int j : getMovieToUser().get(i)){
+                    upowers[j] += mpowers[i] / getMovieToUser().get(i).size();
+                }
+            }
+            //迭代电影权值
+            for(int i : getUserToMovie().keySet()){
+                for(int j : getUserToMovie().get(i)){
+                    mpowers[j] += upowers[i] / getUserToMovie().get(i).size();
+                }
+            }
+            for(double i : mpowers){
+                m_sum += i;
+            }
+            System.out.println("Movies");
+            System.out.println("1:" + (mpowers[1] / m_sum) * 10000 + "%%");
+            System.out.println("2:" + (mpowers[2] / m_sum) * 10000 + "%%");
+            System.out.println("3:" + (mpowers[3] / m_sum) * 10000 + "%%");
+            counter ++;
+            if(counter > 100){
+                swc = false;
+            }
+        }
+        return mpowers;
+    }
 }

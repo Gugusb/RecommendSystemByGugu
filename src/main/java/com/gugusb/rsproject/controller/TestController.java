@@ -222,4 +222,20 @@ public class TestController {
         logService.addLog(rsLog);
         return "ok";
     }
+
+    //==========================PGSIM-CF算法测试==========================
+    @RequestMapping(value = "/test/long1", method = RequestMethod.POST)
+    public ServerResponse LongHair1(HttpSession httpSession, Integer userId){
+        return ServerResponse.createRespBySuccess(algorithmService.getUserToMovie().get(userId));
+    }
+
+    @RequestMapping(value = "/test/long2", method = RequestMethod.POST)
+    public ServerResponse LongHair2(HttpSession httpSession, Integer movieId){
+        return ServerResponse.createRespBySuccess(algorithmService.getMovieToUser().get(movieId));
+    }
+
+    @RequestMapping(value = "/test/long3", method = RequestMethod.POST)
+    public ServerResponse LongHair3(HttpSession httpSession, Integer movieId){
+        return ServerResponse.createRespBySuccess(algorithmService.getInitMoviePower());
+    }
 }
