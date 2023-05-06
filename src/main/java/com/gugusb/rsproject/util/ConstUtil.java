@@ -2,7 +2,7 @@ package com.gugusb.rsproject.util;
 
 public class ConstUtil {
 
-    public static final double HOT_EXHAUSTION = 0.25;
+    public static final double HOT_EXHAUSTION = 0.75;
     public static final double HOT_LINE = 0.8;
     public static final int GENRE_COUNT = 18;
     public static final Long INTEREST_CHANGE_TIME = 24 * 60 * 60 * 7L;

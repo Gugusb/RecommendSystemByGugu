@@ -18,8 +18,8 @@ public class CB_Alg implements BaseAlg{
     private List<MovieWithRate> resultMovies;
     private Map<Integer, List<Integer>> baseMovies;
     private Map<Integer, RSRating> baseRatings;
-    private List<Double> genreSimList;
-    private List<Double> avgRateList;
+    protected List<Double> genreSimList;
+    protected List<Double> avgRateList;
 
     private Map<Integer, List<Integer>> allMovies;
 
@@ -63,7 +63,7 @@ public class CB_Alg implements BaseAlg{
      * @param genre_no 类型不
      * @return double
      */
-    private double getGenreSim(int genre_no){
+    protected double getGenreSim(int genre_no){
         double sim = 0.0;
         for(int i : baseMovies.keySet()){
             List<Integer> genres = baseMovies.get(i);
@@ -87,7 +87,7 @@ public class CB_Alg implements BaseAlg{
      * @param genre_no 类型不
      * @return double
      */
-    private double getGenreAvgRate(int genre_no){
+    protected double getGenreAvgRate(int genre_no){
         double sum = 0.0;
         int count = 0;
         for(int i : baseMovies.keySet()){

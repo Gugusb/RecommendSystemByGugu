@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface RSUserInfRepository extends JpaRepository<RSUserInf, Integer> {
     @Override
     Optional<RSUserInf> findById(Integer integer);
+
+    Optional<RSUserInf> findByName(String name);
 }

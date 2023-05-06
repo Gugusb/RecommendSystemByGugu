@@ -41,7 +41,8 @@ public class RecommendController {
                                     @RequestParam List<Integer> users,
                                     @RequestParam List<Boolean> algBooleans,
                                     @RequestParam Boolean isCompensate,
-                                    @RequestParam Double rate){
+                                    @RequestParam Double rate,
+                                    @RequestParam List<Integer> genres){
         //Step0.优化输入数据
         Set<Integer> userSet = new HashSet<>();
         for(int i : users){
@@ -89,11 +90,22 @@ public class RecommendController {
             for(int i : algs){
                 if(i == 1){
                     //-0-CB算法
-                    CB_Alg cfAlg = algorithmService.getCFAlg(user,
-                            ratingService.getRatedMovieByUserFromTrainSet(user, div_stra),
-                            ratingService.getRatingMapForUserFromTarinSet(user, div_stra),
-                            GenreTransformer.CreateGenreMap(generService.getAllMovieList()),
-                            div_stra);
+                    CB_Alg cfAlg;
+                    if(genres == null || genres.size() <= 0){
+                        cfAlg = algorithmService.getCFAlg(user,
+                                ratingService.getRatedMovieByUserFromTrainSet(user, div_stra),
+                                ratingService.getRatingMapForUserFromTarinSet(user, div_stra),
+                                GenreTransformer.CreateGenreMap(generService.getAllMovieList()),
+                                div_stra);
+                    }else{
+                        cfAlg = algorithmService.getNUAlg(user,
+                                ratingService.getRatedMovieByUserFromTrainSet(user, div_stra),
+                                ratingService.getRatingMapForUserFromTarinSet(user, div_stra),
+                                GenreTransformer.CreateGenreMap(generService.getAllMovieList()),
+                                div_stra,
+                                genres);
+                    }
+
                     List<MovieWithRate> rm = cfAlg.getRecommandMovie();
                     algMap.put(i, cfAlg);
                     algResMap.put(i, rm);

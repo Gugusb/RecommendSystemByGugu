@@ -37,8 +37,13 @@ public class AlgorithmService {
         return cfAlg;
     }
 
+    public NU_Alg getNUAlg(RSUser user, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings, Map<Integer, List<Integer>> allMovies, BaseStraPlus divStra, List<Integer> genres){
+        NU_Alg cfAlg = new NU_Alg(user, movies, ratings, allMovies, divStra, genres);
+        return cfAlg;
+    }
+
     public UCF_Alg getUCFAlg(int[][] rating_page, RSUser user){
-        UCF_Alg ucf_alg = new UCF_Alg(rating_page, user);
+        UCF_Alg ucf_alg = new UCF_Alg(rating_page, this.getMovieHotPowers(),user);
         return ucf_alg;
     }
 
@@ -50,7 +55,7 @@ public class AlgorithmService {
     public MixAlg_1 getMixAlg_1(int[][] rating_page, int[] spawn_count, BaseStraPlus divStra, RSUser user){
         MixAlg_1 mixAlg1;
         //Step1.使用UCF推算出初始推荐电影
-        UCF_Alg ucf_alg = new UCF_Alg(rating_page, user);
+        UCF_Alg ucf_alg = new UCF_Alg(rating_page, this.getMovieHotPowers(), user);
         List<MovieWithRate> ucfMovie = ucf_alg.getRecommandMovie();
         //Step2.对目标电影进行共现矩阵构建并生成ICF对象
         //  Step2.1整合用户喜欢的电影和第一步推荐的电影
@@ -71,7 +76,7 @@ public class AlgorithmService {
     public MixAlg_2 getMixAlg_2(int[][] rating_page, HO_Stra ho_stra, Map<Integer, List<Integer>> allMovies, RSUser user){
         MixAlg_2 mixAlg2;
         //Step1.创建UCF 使用其筛选出和目标用户相似度最高的用户
-        UCF_Alg ucf_alg = new UCF_Alg(rating_page, user);
+        UCF_Alg ucf_alg = new UCF_Alg(rating_page, this.getMovieHotPowers(), user);
         List<Integer> users = ucf_alg.getTopNSimilarUser().keySet().stream().toList();
         //Step2.使用拿到的用户表去拿到相应的数据以多次启动CB算法
         Map<Integer, CBBaseData> cb_datas = new HashMap<>();
@@ -286,10 +291,14 @@ public class AlgorithmService {
 
         for(MovieWithRate mwr : hotMovies){
             Double newRate = mwr.getRate() - ConstUtil.HOT_EXHAUSTION * powerDif * (mwr.getRate() / hotPowerSum);
+            if(Math.random() < 0.3)
+                System.out.println("HotMovie:" + mwr.getMovieId() + " Old:" + mwr.getRate() + " New:" + newRate);
             hotPowers.put(mwr.getMovieId(), newRate);
         }
         for(MovieWithRate mwr : coldMovies){
             Double newRate = mwr.getRate() + ConstUtil.HOT_EXHAUSTION * powerDif * (mwr.getRate() / coldPowerSum);
+            if(Math.random() < 0.1)
+                System.out.println("ColdMovie:" + mwr.getMovieId() + " Old:" + mwr.getRate() + " New:" + newRate);
             hotPowers.put(mwr.getMovieId(), newRate);
         }
     }

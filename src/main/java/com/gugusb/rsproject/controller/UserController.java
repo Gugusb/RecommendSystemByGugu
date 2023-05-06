@@ -41,6 +41,19 @@ public class UserController {
         return ServerResponse.createByErrorMessage("Wrong Password Or Unexist User");
     }
 
+    @RequestMapping(value = "/login2", method = RequestMethod.POST)
+    public ServerResponse userLogin2(HttpSession httpSession,
+                                     @RequestParam String userName,
+                                     @RequestParam String password){
+        Integer userId = userInfService.loginCheck(userName, password);
+        if(userId != -1){
+            httpSession.setAttribute("userId", userId);
+            httpSession.setMaxInactiveInterval(1000000086);
+            return ServerResponse.createRespBySuccess(userId);
+        }
+        return ServerResponse.createByErrorMessage("Wrong Password Or Unexist User");
+    }
+
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public ServerResponse userLogout(HttpSession httpSession){
         if(httpSession.getAttribute("userId") != null){
@@ -69,8 +82,8 @@ public class UserController {
         if((String)map.get("gender") == "0"){
             user.setGender("M");
         }
-        user.setOccupation(Integer.parseInt((String) map.get("occupation")));
-        user.setZipdode((String) map.get("zipnode"));
+        user.setOccupation(7);
+        user.setZipdode("370124");
         System.out.println("reg" + map.get("name"));
 
         if(userInfService.registerUser(user, userInf)){

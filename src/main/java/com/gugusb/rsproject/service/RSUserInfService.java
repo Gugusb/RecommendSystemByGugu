@@ -27,6 +27,14 @@ public class RSUserInfService {
         }
         return false;
     }
+
+    public Integer loginCheck(String name, String password){
+        RSUserInf user = userInfRepository.findByName(name).get();
+        if(user.getPassword().equals(password)){
+            return user.getId();
+        }
+        return -1;
+    }
     public Boolean existCheck(RSUser user){
         RSUser user1 = userRepository.findById(user.getId()).get();
         if(user1 != null){

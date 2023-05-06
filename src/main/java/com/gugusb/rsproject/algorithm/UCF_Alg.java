@@ -21,6 +21,7 @@ public class UCF_Alg implements BaseAlg{
     private List<MovieWithRate> resultMovies;
     private RSUser user = null;
     private int[][] rating_page;
+    private Map<Integer, Double> hotPowers;
 
     public double getSimilarityBetweenUser(Integer userId1, Integer userId2){
         double sim = 0.0;
@@ -32,8 +33,8 @@ public class UCF_Alg implements BaseAlg{
         for(int i = 1;i <= ConstUtil.MOVIE_COUNT;i ++){
             if(rating_page[userId1][i] + rating_page[userId2][i] > 0){
                 t_movieid.add(i);
-                vector_user1.add(rating_page[userId1][i]);
-                vector_user2.add(rating_page[userId2][i]);
+                vector_user1.add((int) (rating_page[userId1][i] * hotPowers.get(i)));
+                vector_user2.add((int) (rating_page[userId2][i] * hotPowers.get(i)));
             }
         }
         //Step3.1.计算两个向量的余弦相似度
@@ -106,15 +107,6 @@ public class UCF_Alg implements BaseAlg{
             double fz = 0.0;
             double fm = 0.0;
             for(Integer userId : simUsers.keySet()){
-                /*
-                这里存在一些思想问题
-                对于一个相似用户并没有看过这个电影
-                那么其是否也成为推荐这个电影的影响因子
-                一个想法是，这个用户是判定为和用户相似的用户，那么其所有的观影历史都是有价值的，故此以其评分平均值参与计算
-                另一个想法是，这个用户既然没有看过，那么大可忽略其对该电影推荐的影响，分子和分母都不会因为其增加
-                第二个想法显然是有些铸币的，要是只有一个相似用户看过电影，那么这个电影最终的推荐评分就只取决于这个人的评分
-                那这显然是片面的捏
-                 */
                 if(rating_page[userId][i] != 0){
                     fz += rating_page[userId][i] * simUsers.get(userId);
                     fm += simUsers.get(userId);
@@ -134,8 +126,9 @@ public class UCF_Alg implements BaseAlg{
         return this.user;
     }
 
-    public UCF_Alg(int[][] rating_page, RSUser user){
+    public UCF_Alg(int[][] rating_page, Map<Integer, Double> hotPowers, RSUser user){
         this.user = user;
+        this.hotPowers = hotPowers;
         this.rating_page = rating_page;
     }
 
