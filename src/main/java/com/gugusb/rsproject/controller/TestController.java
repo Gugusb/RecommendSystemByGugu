@@ -238,4 +238,9 @@ public class TestController {
     public ServerResponse LongHair3(HttpSession httpSession, Integer movieId){
         return ServerResponse.createRespBySuccess(algorithmService.getInitMoviePower());
     }
+
+    @RequestMapping(value = "/test/long4", method = RequestMethod.POST)
+    public ServerResponse LongHair4(HttpSession httpSession, Integer movieId){
+        return ServerResponse.createRespBySuccess(algorithmService.getMovieHotPower(movieId));
+    }
 }

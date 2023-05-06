@@ -30,6 +30,7 @@ public class AlgorithmService {
 
     Map<Integer, Set<Integer>> userToMovie;
     Map<Integer, Set<Integer>> movieToUser;
+    Map<Integer, Double> hotPowers;
 
     public CB_Alg getCFAlg(RSUser user, Map<Integer, List<Integer>> movies, Map<Integer, RSRating> ratings, Map<Integer, List<Integer>> allMovies, BaseStraPlus divStra){
         CB_Alg cfAlg = new CB_Alg(user, movies, ratings, allMovies, divStra);
@@ -226,7 +227,6 @@ public class AlgorithmService {
         int counter = 1;
         //激情迭代！
         while(swc){
-            System.out.println("Time:" + counter);
             m_sum = 0.0;
             //迭代用户权值
             for(int i : getMovieToUser().keySet()){
@@ -243,15 +243,69 @@ public class AlgorithmService {
             for(double i : mpowers){
                 m_sum += i;
             }
-            System.out.println("Movies");
-            System.out.println("1:" + (mpowers[1] / m_sum) * 10000 + "%%");
-            System.out.println("2:" + (mpowers[2] / m_sum) * 10000 + "%%");
-            System.out.println("3:" + (mpowers[3] / m_sum) * 10000 + "%%");
             counter ++;
-            if(counter > 100){
+            if(counter > 50){
+                //百分比化电影权值
+                for(int i = 1;i < mpowers.length;i ++){
+                    if(mpowers[i] != 0.0){
+                        mpowers[i] = mpowers[i] / m_sum * 1000000;
+                    }
+                }
                 swc = false;
             }
         }
         return mpowers;
+    }
+
+    //获取最终电影热度权值
+    public void InitFinalMoviePower(){
+        hotPowers = new HashMap<>();
+        double[] movieArr = getInitMoviePower();
+        List<MovieWithRate> movies = new Stack<>();
+        for(int i = 1;i < movieArr.length;i ++){
+            MovieWithRate mwr = new MovieWithRate(i, movieArr[i]);
+            movies.add(mwr);
+        }
+        Collections.sort(movies);
+
+        List<MovieWithRate> coldMovies = movies.subList((int)(movies.size() * (1.0 - ConstUtil.HOT_LINE)), movies.size());
+        List<MovieWithRate> hotMovies = movies.subList(0, (int)(movies.size() * (1.0 - ConstUtil.HOT_LINE)));
+
+        double powerDif = 0.0;
+        double hotPowerSum = 0.0;
+        double coldPowerSum = 0.0;
+        for(MovieWithRate mwr : hotMovies){
+            hotPowerSum += mwr.getRate();
+        }
+        for(MovieWithRate mwr : coldMovies){
+            coldPowerSum += mwr.getRate();
+        }
+        powerDif = hotPowerSum - coldPowerSum;
+
+        System.out.println("powerDif: " + powerDif);
+
+        for(MovieWithRate mwr : hotMovies){
+            Double newRate = mwr.getRate() - ConstUtil.HOT_EXHAUSTION * powerDif * (mwr.getRate() / hotPowerSum);
+            hotPowers.put(mwr.getMovieId(), newRate);
+        }
+        for(MovieWithRate mwr : coldMovies){
+            Double newRate = mwr.getRate() + ConstUtil.HOT_EXHAUSTION * powerDif * (mwr.getRate() / coldPowerSum);
+            hotPowers.put(mwr.getMovieId(), newRate);
+        }
+    }
+
+    //获取指定电影的热度
+    public double getMovieHotPower(Integer movieId){
+        if(hotPowers == null){
+            InitFinalMoviePower();
+        }
+        return hotPowers.get(movieId);
+    }
+
+    public Map<Integer, Double> getMovieHotPowers(){
+        if(hotPowers == null){
+            InitFinalMoviePower();
+        }
+        return hotPowers;
     }
 }
